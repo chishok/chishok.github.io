@@ -27,27 +27,26 @@
                 <title>CST 8703 Lab 0 - Hello Real-Time World</title>
         <style type="text/css">code{white-space: pre;}</style>
                         <style type="text/css">
-            pre > code.sourceCode { white-space: pre; position: relative; }
-            pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-            pre > code.sourceCode > span:empty { height: 1.2em; }
-            code.sourceCode > span { color: inherit; text-decoration: inherit; }
+            a.sourceLine { display: inline-block; line-height: 1.25; }
+            a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+            a.sourceLine:empty { height: 1.2em; }
+            .sourceCode { overflow: visible; }
+            code.sourceCode { white-space: pre; position: relative; }
             div.sourceCode { margin: 1em 0; }
             pre.sourceCode { margin: 0; }
             @media screen {
             div.sourceCode { overflow: auto; }
             }
             @media print {
-            pre > code.sourceCode { white-space: pre-wrap; }
-            pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+            code.sourceCode { white-space: pre-wrap; }
+            a.sourceLine { text-indent: -1em; padding-left: 1em; }
             }
-            pre.numberSource code
-              { counter-reset: source-line 0; }
-            pre.numberSource code > span
-              { position: relative; left: -4em; counter-increment: source-line; }
-            pre.numberSource code > span > a:first-child::before
-              { content: counter(source-line);
+            pre.numberSource a.sourceLine
+              { position: relative; left: -4em; }
+            pre.numberSource a.sourceLine::before
+              { content: attr(title);
                 position: relative; left: -1em; text-align: right; vertical-align: baseline;
-                border: none; display: inline-block;
+                border: none; pointer-events: all; display: inline-block;
                 -webkit-touch-callout: none; -webkit-user-select: none;
                 -khtml-user-select: none; -moz-user-select: none;
                 -ms-user-select: none; user-select: none;
@@ -56,9 +55,9 @@
               }
             pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
             div.sourceCode
-              {  background-color: #f8f8f8; }
+              { background-color: #f8f8f8; }
             @media screen {
-            pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+            a.sourceLine::before { text-decoration: underline; }
             }
             code span.al { color: #ef2929; } /* Alert */
             code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
@@ -89,8 +88,7 @@
             code span.vs { color: #4e9a06; } /* VerbatimString */
             code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
         </style>
-                                               
-    </head>
+                                                </head>
 
     <body>
 
@@ -111,28 +109,26 @@
                         <div class="uk-panel uk-panel-box menu-begin" >
 
                                                         <ul>
-                                                        <li><a href="#background">Background</a>
-                                                        <ul>
-                                                        <li><a href="#useful-links-and-references-for-help-with-posix">Useful Links And References For Help With POSIX</a></li>
-                                                        <li><a href="#coding-best-practices-standards-and-formatting">Coding Best Practices, Standards, and Formatting</a></li>
-                                                        </ul></li>
-                                                        <li><a href="#materials">Materials</a></li>
-                                                        <li><a href="#methods">Methods</a>
-                                                        <ul>
-                                                        <li><a href="#install-prerequisites-windows-10">Install Prerequisites (Windows 10)</a></li>
-                                                        <li><a href="#install-prerequisites-ubuntu-20.04">Install Prerequisites (Ubuntu 20.04)</a></li>
-                                                        <li><a href="#install-raspberry-pi-os">Install Raspberry Pi OS</a></li>
-                                                        <li><a href="#set-up-raspberry-pi-with-development-tools">Set Up Raspberry Pi With Development Tools</a></li>
-                                                        <li><a href="#hint-use-ssh-key-pair-to-connect-to-raspberry-pi">Hint: Use SSH key pair to Connect To Raspberry Pi</a></li>
-                                                        <li><a href="#set-up-vs-code-for-ssh-remote-development-with-the-raspberry-pi">Set Up VS Code for SSH Remote Development With The Raspberry Pi</a></li>
-                                                        <li><a href="#retrieve-lab-source">Retrieve Lab Source</a></li>
-                                                        <li><a href="#build-and-debug">Build and Debug</a></li>
-                                                        <li><a href="#provide-thread-and-timing-information">Provide thread and timing information</a></li>
-                                                        </ul></li>
-                                                        <li><a href="#analysis">Analysis</a></li>
-                                                        <li><a href="#submission">Submission</a></li>
-                                                        <li><a href="#references">References</a></li>
-                                                        </ul>
+                            <li><a href="#background">Background</a><ul>
+                            <li><a href="#useful-links-and-references-for-help-with-posix">Useful Links And References For Help With POSIX</a></li>
+                            <li><a href="#coding-best-practices-standards-and-formatting">Coding Best Practices, Standards, and Formatting</a></li>
+                            </ul></li>
+                            <li><a href="#materials">Materials</a></li>
+                            <li><a href="#methods">Methods</a><ul>
+                            <li><a href="#install-prerequisites-windows-10">Install Prerequisites (Windows 10)</a></li>
+                            <li><a href="#install-prerequisites-ubuntu-20.04">Install Prerequisites (Ubuntu 20.04)</a></li>
+                            <li><a href="#install-raspberry-pi-os">Install Raspberry Pi OS</a></li>
+                            <li><a href="#set-up-raspberry-pi-with-development-tools">Set Up Raspberry Pi With Development Tools</a></li>
+                            <li><a href="#hint-use-ssh-key-pair-to-connect-to-raspberry-pi">Hint: Use SSH key pair to Connect To Raspberry Pi</a></li>
+                            <li><a href="#set-up-vs-code-for-ssh-remote-development-with-the-raspberry-pi">Set Up VS Code for SSH Remote Development With The Raspberry Pi</a></li>
+                            <li><a href="#retrieve-lab-source">Retrieve Lab Source</a></li>
+                            <li><a href="#build-and-debug">Build and Debug</a></li>
+                            <li><a href="#provide-thread-and-timing-information">Provide thread and timing information</a></li>
+                            </ul></li>
+                            <li><a href="#analysis">Analysis</a></li>
+                            <li><a href="#submission">Submission</a></li>
+                            <li><a href="#references">References</a></li>
+                            </ul>
                             
                         </div>
                     </div>
@@ -167,7 +163,7 @@
 </thead>
 <tbody>
 <tr class="odd">
-<td><a href="https://man7.org/tlpi">https://man7.org/tlpi</a> <span class="citation" data-cites="Kerrisk2010">[<a href="#ref-Kerrisk2010" role="doc-biblioref">1</a>]</span></td>
+<td><a href="https://man7.org/tlpi">https://man7.org/tlpi</a> <span class="citation" data-cites="Kerrisk2010">[<a href="#ref-Kerrisk2010">1</a>]</span></td>
 <td>The ultimate reference for Linux and UNIX system programming.</td>
 </tr>
 <tr class="even">
@@ -197,26 +193,26 @@
 <p>Follow instructions online to <a href="https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse#start-and-configure-openssh-server">start and configure OpenSSH</a>.</p></li>
 <li><p>Follow instructions online to <a href="https://chocolatey.org/install">install Chocolatey</a>. Chocolatey has extensive documentation here: <a href="https://docs.chocolatey.org/">https://docs.chocolatey.org/</a>.</p></li>
 <li><p>Install <a href="https://community.chocolatey.org/packages/git.install">Git with Chocolatey</a>. Open a powershell prompt as an administrator and run:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode ps"><code class="sourceCode postscript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>choco install git.install</span></code></pre></div></li>
+<div class="sourceCode" id="cb1"><pre class="sourceCode ps"><code class="sourceCode postscript"><a class="sourceLine" id="cb1-1" title="1">choco install git.install</a></code></pre></div></li>
 <li><p>Install <a href="https://community.chocolatey.org/packages/python3/3.10.4">Python with Chocolatey</a>. Open a powershell prompt as an administrator and run:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode ps"><code class="sourceCode postscript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>choco install python3</span></code></pre></div></li>
+<div class="sourceCode" id="cb2"><pre class="sourceCode ps"><code class="sourceCode postscript"><a class="sourceLine" id="cb2-1" title="1">choco install python3</a></code></pre></div></li>
 <li><p>Follow instructions online to <a href="https://docs.microsoft.com/en-us/windows/wsl/install">install Windows Subsystem for Linux (WSL)</a>.</p>
 <p>Reboot the system and open Ubuntu for the first time. The installation will continue and you will be prompted to enter a username and password. Upgrade Ubuntu with the commands:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="fu">sudo</span> apt update</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="fu">sudo</span> apt upgrade -y</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1"><span class="fu">sudo</span> apt update</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="fu">sudo</span> apt upgrade -y</a></code></pre></div>
 <p>You can also install different distributions, such as Debian:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode ps"><code class="sourceCode postscript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>Invoke-WebRequest -Uri https:<span class="dt">//aka.ms/wsl-debian-gnulinux</span> -OutFile ~<span class="dt">/debian.appx</span> -UseBasicParsing</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="kw">Add</span>-AppxPackage -Path ~<span class="dt">/debian.appx</span></span></code></pre></div></li>
+<div class="sourceCode" id="cb4"><pre class="sourceCode ps"><code class="sourceCode postscript"><a class="sourceLine" id="cb4-1" title="1">Invoke-WebRequest -Uri https:<span class="dt">//aka.ms/wsl-debian-gnulinux</span> -OutFile ~<span class="dt">/debian.appx</span> -UseBasicParsing</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="kw">Add</span>-AppxPackage -Path ~<span class="dt">/debian.appx</span></a></code></pre></div></li>
 <li><p>Follow instructions online to <a href="https://docs.microsoft.com/en-us/windows/terminal/install">install Windows Terminal</a>. If you want to customize a pretty terminal prompt, <a href="https://ohmyposh.dev/">OhMyPosh</a> is recommended.</p></li>
 <li><p>Follow instructions online to <a href="https://code.visualstudio.com/Docs/setup/setup-overview">install VS Code</a>.</p></li>
 </ol>
 <h3 id="install-prerequisites-ubuntu-20.04">Install Prerequisites (Ubuntu 20.04)</h3>
 <p>In a bash terminal, run the following:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="fu">sudo</span> apt install -y <span class="kw">\</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>    <span class="fu">git</span> <span class="kw">\</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>    <span class="ex">openssh-client</span> <span class="kw">\</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>    <span class="ex">python3</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="fu">sudo</span> snap install code --classic</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1"><span class="fu">sudo</span> apt install -y \</a>
+<a class="sourceLine" id="cb5-2" title="2">    git \</a>
+<a class="sourceLine" id="cb5-3" title="3">    openssh-client \</a>
+<a class="sourceLine" id="cb5-4" title="4">    python3</a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="fu">sudo</span> snap install code --classic</a></code></pre></div>
 <h3 id="install-raspberry-pi-os">Install Raspberry Pi OS</h3>
 <ol type="1">
 <li><p>Download and install the <a href="https://www.raspberrypi.com/software/">Raspberry Pi OS Imager application</a>.</p></li>
@@ -237,39 +233,39 @@
 <tbody>
 <tr class="odd">
 <td>1. Select ‘CHOOSE OS’</td>
-<td><img src="raspi-imager-1.png" title="fig:" width="360" alt="Screenshot of Raspberry Pi Imager main window" /></td>
+<td><img src="raspi-imager-1.png" title="fig:" alt="Screenshot of Raspberry Pi Imager main window" width="360" /></td>
 </tr>
 <tr class="even">
 <td>2. Select ‘Raspberry Pi OS (other)’</td>
-<td><img src="raspi-imager-2.png" title="fig:" width="360" alt="Screenshot of Raspberry Pi Imager OS selection" /></td>
+<td><img src="raspi-imager-2.png" title="fig:" alt="Screenshot of Raspberry Pi Imager OS selection" width="360" /></td>
 </tr>
 <tr class="odd">
 <td>3. Select ‘Raspberry Pi OS Lite (32-bit)’</td>
-<td><img src="raspi-imager-3.png" title="fig:" width="360" alt="Screenshot of Raspberry Pi Imager other OS selection" /></td>
+<td><img src="raspi-imager-3.png" title="fig:" alt="Screenshot of Raspberry Pi Imager other OS selection" width="360" /></td>
 </tr>
 <tr class="even">
 <td>4. Click on the button with the gear symbol to set advanced options</td>
-<td><img src="raspi-imager-3b.png" title="fig:" width="360" alt="Screenshot of Raspberry Pi Imager with visible settings button" /></td>
+<td><img src="raspi-imager-3b.png" title="fig:" alt="Screenshot of Raspberry Pi Imager with visible settings button" width="360" /></td>
 </tr>
 <tr class="odd">
 <td>5. Set custom hostname and enable SSH</td>
-<td><img src="raspi-imager-4.png" title="fig:" width="360" alt="Screenshot of Raspberry Pi Imager advanced settings" /></td>
+<td><img src="raspi-imager-4.png" title="fig:" alt="Screenshot of Raspberry Pi Imager advanced settings" width="360" /></td>
 </tr>
 <tr class="even">
 <td>6. Set username and password and configure wireless LAN with your router SSID and password.</td>
-<td><img src="raspi-imager-5.png" title="fig:" width="360" alt="Screenshot of Raspberry Pi Imager advanced settings" /></td>
+<td><img src="raspi-imager-5.png" title="fig:" alt="Screenshot of Raspberry Pi Imager advanced settings" width="360" /></td>
 </tr>
 <tr class="odd">
 <td>7. Set your locale and click ‘SAVE’</td>
-<td><img src="raspi-imager-6.png" title="fig:" width="360" alt="Screenshot of Raspberry Pi Imager advanced settings" /></td>
+<td><img src="raspi-imager-6.png" title="fig:" alt="Screenshot of Raspberry Pi Imager advanced settings" width="360" /></td>
 </tr>
 <tr class="even">
 <td>8. Select ‘CHOOSE STORAGE’ and choose the MicroSD card.</td>
-<td><img src="raspi-imager-7.png" title="fig:" width="360" alt="Screenshot of Raspberry Pi Imager advanced settings" /></td>
+<td><img src="raspi-imager-7.png" title="fig:" alt="Screenshot of Raspberry Pi Imager advanced settings" width="360" /></td>
 </tr>
 <tr class="odd">
 <td>9. Select ‘WRITE’ and wait for process to complete.</td>
-<td><img src="raspi-imager-8.png" title="fig:" width="360" alt="Screenshot of Raspberry Pi Imager advanced settings" /></td>
+<td><img src="raspi-imager-8.png" title="fig:" alt="Screenshot of Raspberry Pi Imager advanced settings" width="360" /></td>
 </tr>
 </tbody>
 </table></li>
@@ -277,59 +273,59 @@
 </ol>
 <h3 id="set-up-raspberry-pi-with-development-tools">Set Up Raspberry Pi With Development Tools</h3>
 <p>When your Raspberry Pi is connected to power, it will turn on and connect to the local network with SSID and password provided in the previous section. You can also connect to the local network with an Ethernet cable instead of relying on WiFi. The first step in setting up for remote development is to connect to the Raspberry Pi with ssh by entering the following command:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="fu">ssh</span> <span class="op">&lt;</span>username<span class="op">&gt;</span>@<span class="op">&lt;</span>hostname<span class="op">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1"><span class="fu">ssh</span> <span class="op">&lt;</span>username<span class="op">&gt;</span>@<span class="op">&lt;</span>hostname<span class="op">&gt;</span></a></code></pre></div>
 <p>Enter <code>&lt;username&gt;</code> and <code>&lt;hostname&gt;</code> as configured when creating the OS image in the <a href="#install-raspberry-pi-os">previous section</a>. For example:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="fu">ssh</span> chishok@raspi4</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" title="1"><span class="fu">ssh</span> chishok@raspi4</a></code></pre></div>
 <p>If provided a warning “The authenticity of host ‘…’ can’t be established.”, simply respond “yes”.</p>
 <p>If the hostname cannot be resolved, look at your router’s DHCP settings to find the assigned IP address corresponding to the Raspberry Pi and use that instead. You may also configure a reserved IP address just for your Pi by changing the appropriate settings in your router. For example if the IP address is <code>192.168.1.120</code>, login with the command:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="fu">ssh</span> chishok@192.168.1.120</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" title="1"><span class="fu">ssh</span> chishok@192.168.1.120</a></code></pre></div>
 <p>Once connected to your Pi, the following steps will guide you through the initial setup for remote C/C++ and Python development:</p>
 <ol type="1">
 <li><p>Install C/C++ development tools with the following commands:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="fu">sudo</span> apt update</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="fu">sudo</span> apt upgrade -y</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="fu">sudo</span> apt install -y <span class="kw">\</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a>    <span class="fu">git</span> <span class="kw">\</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a>    <span class="ex">build-essential</span> <span class="kw">\</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a>    <span class="fu">cmake</span> <span class="kw">\</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a>    <span class="ex">clang-format</span></span></code></pre></div></li>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" title="1"><span class="fu">sudo</span> apt update</a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="fu">sudo</span> apt upgrade -y</a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="fu">sudo</span> apt install -y \</a>
+<a class="sourceLine" id="cb9-4" title="4">    git \</a>
+<a class="sourceLine" id="cb9-5" title="5">    build-essential \</a>
+<a class="sourceLine" id="cb9-6" title="6">    cmake \</a>
+<a class="sourceLine" id="cb9-7" title="7">    clang-format</a></code></pre></div></li>
 <li><p>Install Python with the following command:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="fu">sudo</span> apt install -y <span class="kw">\</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a>    <span class="ex">python3</span> <span class="kw">\</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a>    <span class="ex">python3-pip</span> <span class="kw">\</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a>    <span class="ex">python3-venv</span> <span class="kw">\</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true"></a>    <span class="ex">python3-setuptools</span> <span class="kw">\</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true"></a>    <span class="ex">python3-flake8</span> <span class="kw">\</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true"></a>    <span class="ex">python3-flake8-docstrings</span> <span class="kw">\</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true"></a>    <span class="ex">python3-autopep8</span></span></code></pre></div></li>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb10-1" title="1"><span class="fu">sudo</span> apt install -y \</a>
+<a class="sourceLine" id="cb10-2" title="2">    python3 \</a>
+<a class="sourceLine" id="cb10-3" title="3">    python3-pip \</a>
+<a class="sourceLine" id="cb10-4" title="4">    python3-venv \</a>
+<a class="sourceLine" id="cb10-5" title="5">    python3-setuptools \</a>
+<a class="sourceLine" id="cb10-6" title="6">    python3-flake8 \</a>
+<a class="sourceLine" id="cb10-7" title="7">    python3-flake8-docstrings \</a>
+<a class="sourceLine" id="cb10-8" title="8">    python3-autopep8</a></code></pre></div></li>
 <li><p>Configure Git with your name and email:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="fu">git</span> config --global user.name <span class="st">&quot;First Last&quot;</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="fu">git</span> config --global user.email <span class="st">&quot;student@algonquincollege.com&quot;</span></span></code></pre></div></li>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb11-1" title="1"><span class="fu">git</span> config --global user.name <span class="st">&quot;First Last&quot;</span></a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="fu">git</span> config --global user.email <span class="st">&quot;student@algonquincollege.com&quot;</span></a></code></pre></div></li>
 <li><p>Create ssh key pair with the command:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="fu">ssh-keygen</span> -t rsa</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb12-1" title="1"><span class="fu">ssh-keygen</span> -t rsa</a></code></pre></div>
 <p>Do not enter a passphrase and accept all default options.</p></li>
 <li><p>Create local directory <code>~/.local</code> and add it to <code>PATH</code> environment variable with the following commands:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="fu">mkdir</span> -p <span class="st">&quot;</span><span class="va">${HOME}</span><span class="st">/.local/bin&quot;</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a><span class="bu">echo</span> <span class="st">&quot;export PATH=</span><span class="dt">\$</span><span class="st">{PATH}:</span><span class="va">${HOME}</span><span class="st">/.local/bin&quot;</span> <span class="op">&gt;&gt;</span> <span class="va">${HOME}</span>/.bash_profile</span></code></pre></div></li>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb13-1" title="1"><span class="fu">mkdir</span> -p <span class="st">&quot;</span><span class="va">${HOME}</span><span class="st">/.local/bin&quot;</span></a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="bu">echo</span> <span class="st">&quot;export PATH=</span><span class="dt">\$</span><span class="st">{PATH}:</span><span class="va">${HOME}</span><span class="st">/.local/bin&quot;</span> <span class="op">&gt;&gt;</span> <span class="va">${HOME}</span>/.bash_profile</a></code></pre></div></li>
 <li><p>For lab submissions, environment variables <code>AC_USERNAME</code> and <code>AC_EMAIL</code> must be set with your student id name and email. These variables can be set when logging in in by adding them to the bash profile script as follows:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="bu">echo</span> <span class="st">&quot;export AC_USERNAME=chishok&quot;</span> <span class="op">&gt;&gt;</span> <span class="st">&quot;</span><span class="va">${HOME}</span><span class="st">/.bash_profile&quot;</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true"></a><span class="bu">echo</span> <span class="st">&quot;export AC_EMAIL=chishok@algonquincollege.com&quot;</span> <span class="op">&gt;&gt;</span> <span class="st">&quot;</span><span class="va">${HOME}</span><span class="st">/.bash_profile&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb14-1" title="1"><span class="bu">echo</span> <span class="st">&quot;export AC_USERNAME=chishok&quot;</span> <span class="op">&gt;&gt;</span> <span class="st">&quot;</span><span class="va">${HOME}</span><span class="st">/.bash_profile&quot;</span></a>
+<a class="sourceLine" id="cb14-2" title="2"><span class="bu">echo</span> <span class="st">&quot;export AC_EMAIL=chishok@algonquincollege.com&quot;</span> <span class="op">&gt;&gt;</span> <span class="st">&quot;</span><span class="va">${HOME}</span><span class="st">/.bash_profile&quot;</span></a></code></pre></div>
 <p>Replace <code>chishok</code> and <code>chishok@algonquincollege.com</code> with your own student name and email.</p></li>
 <li><p>Source profile script from <code>~/.bashrc</code>:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a><span class="bu">echo</span> <span class="st">&quot;source </span><span class="va">${HOME}</span><span class="st">/.bash_profile&quot;</span> <span class="op">&gt;&gt;</span> <span class="va">${HOME}</span>/.bashrc</span></code></pre></div></li>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb15-1" title="1"><span class="bu">echo</span> <span class="st">&quot;source </span><span class="va">${HOME}</span><span class="st">/.bash_profile&quot;</span> <span class="op">&gt;&gt;</span> <span class="va">${HOME}</span>/.bashrc</a></code></pre></div></li>
 </ol>
 <h3 id="hint-use-ssh-key-pair-to-connect-to-raspberry-pi">Hint: Use SSH key pair to Connect To Raspberry Pi</h3>
 <p>Exit the ssh connection with the command <code>exit</code> to return to your desktop computer command line. Follow these steps to conveniently connect to the raspberry pi without having to enter a username and password:</p>
 <ol type="1">
 <li><p>Generate key pair</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode ps"><code class="sourceCode postscript"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a>ssh-keygen -t rsa</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode ps"><code class="sourceCode postscript"><a class="sourceLine" id="cb16-1" title="1">ssh-keygen -t rsa</a></code></pre></div>
 <p>Do not enter a passphrase and accept all default options.</p></li>
 <li><p>Copy your public key to the Raspberry Pi’s authorized keys file:</p>
 <p>From Windows:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode ps"><code class="sourceCode postscript"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a>ssh-keygen -t rsa</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true"></a>cat $env:USERPROFILE\.ssh\id_rsa.pub | ssh chishok@raspi4 &quot;cat &gt;&gt; .ssh<span class="dt">/authorized_keys&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode ps"><code class="sourceCode postscript"><a class="sourceLine" id="cb17-1" title="1">ssh-keygen -t rsa</a>
+<a class="sourceLine" id="cb17-2" title="2">cat $env:USERPROFILE\.ssh\id_rsa.pub | ssh chishok@raspi4 &quot;cat &gt;&gt; .ssh<span class="dt">/authorized_keys&quot;</span></a></code></pre></div>
 <p>From Linux:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode ps"><code class="sourceCode postscript"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a>ssh-<span class="kw">copy</span>-id chishok@raspi4</span></code></pre></div></li>
+<div class="sourceCode" id="cb18"><pre class="sourceCode ps"><code class="sourceCode postscript"><a class="sourceLine" id="cb18-1" title="1">ssh-<span class="kw">copy</span>-id chishok@raspi4</a></code></pre></div></li>
 </ol>
 <p>You should now be able to <code>ssh</code> into your Raspberry Pi from your computer without having to enter a password.</p>
 <h3 id="set-up-vs-code-for-ssh-remote-development-with-the-raspberry-pi">Set Up VS Code for SSH Remote Development With The Raspberry Pi</h3>
@@ -390,10 +386,10 @@
 </table>
 <h3 id="retrieve-lab-source">Retrieve Lab Source</h3>
 <p>On the Raspberry Pi (or local Linux system, if desired), checkout the code sample for this lab:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true"></a><span class="fu">git</span> clone https://github.com/chishok/CST8703-Lab0</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb19-1" title="1"><span class="fu">git</span> clone https://github.com/chishok/CST8703-Lab0</a></code></pre></div>
 <p>Run VS Code on your desktop computer and connect remotely with SSH (or WSL if on Windows without a Raspberry Pi). Open the folder <code>CST8703-Lab0</code> checked out with Git. The following screenshot shows how the folder should eventually appear:</p>
 <figure>
-<img src="vscode-1.png" alt="" /><figcaption>Screenshot of VS Code</figcaption>
+<img src="vscode-1.png" alt="Screenshot of VS Code" /><figcaption>Screenshot of VS Code</figcaption>
 </figure>
 <h3 id="build-and-debug">Build and Debug</h3>
 <blockquote>
@@ -402,54 +398,73 @@
 <ol type="1">
 <li><p>Click on kits button at the bottom of VS Code window taskbar. <a href="https://code.visualstudio.com/docs/cpp/cmake-linux#_select-a-kit">Select the GCC compiler kit</a>.</p>
 <figure>
-<img src="vscode-2.png" alt="" /><figcaption>Screenshot of VS Code with CMake kits selection</figcaption>
+<img src="vscode-2.png" alt="Screenshot of VS Code with CMake kits selection" /><figcaption>Screenshot of VS Code with CMake kits selection</figcaption>
 </figure></li>
 <li><p>Select the CMake button and choose the Build type “Debug.”</p>
 <p>CMake will configure and a <code>build</code> folder is created where target programs are created. The following screenshot shows the output on successful build:</p>
 <figure>
-<img src="vscode-3.png" alt="" /><figcaption>Screenshot of VS Code with CMake configuration output</figcaption>
+<img src="vscode-3.png" alt="Screenshot of VS Code with CMake configuration output" /><figcaption>Screenshot of VS Code with CMake configuration output</figcaption>
 </figure></li>
 <li><p>Select a target program by clicking on <code>[all]</code> button on bottom taskbar and choosing <code>CST8703Lab0-HelloWorld</code> as shown here:</p>
 <figure>
-<img src="vscode-4.png" alt="" /><figcaption>Screenshot of VS Code to select target</figcaption>
+<img src="vscode-4.png" alt="Screenshot of VS Code to select target" /><figcaption>Screenshot of VS Code to select target</figcaption>
 </figure></li>
 <li><p>Click the “Build” button on the bottom taskbar to build the target. The build process output is shown here:</p>
 <figure>
-<img src="vscode-5.png" alt="" /><figcaption>Screenshot of VS Code with build output</figcaption>
+<img src="vscode-5.png" alt="Screenshot of VS Code with build output" /><figcaption>Screenshot of VS Code with build output</figcaption>
 </figure></li>
 <li><p>Click the “Play” button beside the target name to run the program. The terminal appears with output from running the program as shown here:</p>
 <figure>
-<img src="vscode-6.png" alt="" /><figcaption>Screenshot of VS Code with run output</figcaption>
+<img src="vscode-6.png" alt="Screenshot of VS Code with run output" /><figcaption>Screenshot of VS Code with run output</figcaption>
 </figure></li>
 <li><p>Open <code>HelloWorld/main.c</code> and create a breakpoint on line 112.Debug the program by clicking on the “Bug” button on the bottom taskbar. VS Code enters debug mode as shown here:</p>
 <figure>
-<img src="vscode-debug.png" alt="" /><figcaption>Screenshot of VS Code while debugging</figcaption>
+<img src="vscode-debug.png" alt="Screenshot of VS Code while debugging" /><figcaption>Screenshot of VS Code while debugging</figcaption>
 </figure>
 <p>More information on <a href="https://code.visualstudio.com/docs/cpp/cpp-debug">debugging in VS Code can be found online</a>.</p></li>
 </ol>
 <h3 id="provide-thread-and-timing-information">Provide thread and timing information</h3>
 <p>Alter the target program to set scheduling parameters of the main thread, retrieve time, and cause the main program to sleep for 30 seconds. Make your modifications between the comments</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true"></a>    <span class="co">/*</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true"></a><span class="co">     * STUDENT WORK SECTION </span><span class="re">BEGIN</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true"></a><span class="co">     * ==========================</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true"></a><span class="co">     */</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb20-1" title="1">    <span class="co">/*</span></a>
+<a class="sourceLine" id="cb20-2" title="2"><span class="co">     * STUDENT WORK SECTION </span><span class="re">BEGIN</span></a>
+<a class="sourceLine" id="cb20-3" title="3"><span class="co">     * ==========================</span></a>
+<a class="sourceLine" id="cb20-4" title="4"><span class="co">     */</span></a></code></pre></div>
 <p>and</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true"></a>    <span class="co">/*</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true"></a><span class="co">     * ========================</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true"></a><span class="co">     * STUDENT WORK SECTION </span><span class="re">END</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true"></a><span class="co">     */</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb21-1" title="1">    <span class="co">/*</span></a>
+<a class="sourceLine" id="cb21-2" title="2"><span class="co">     * ========================</span></a>
+<a class="sourceLine" id="cb21-3" title="3"><span class="co">     * STUDENT WORK SECTION </span><span class="re">END</span></a>
+<a class="sourceLine" id="cb21-4" title="4"><span class="co">     */</span></a></code></pre></div>
 <p>Hints and instruction may be provided as comments in the code. Write code to do the following:</p>
 <ol type="1">
-<li></li>
+<li>Set the following for the main thread:
+<ol type="1">
+<li>Scheduling priority: 90</li>
+<li>Scheduling policy: <code>SCHED_RR</code></li>
+</ol></li>
+<li>Retrieve the following information from the main thread:
+<ol type="1">
+<li>Scheduling priority</li>
+<li>Scheduling policy</li>
+<li>Thread name</li>
+<li>Thread ID</li>
+<li>Minimum priority for current scheduling policy</li>
+<li>Maximum priority for current scheduling policy</li>
+</ol></li>
+<li>Get the current time form the following real-time clocks:
+<ol type="1">
+<li><code>CLOCK_REALTIME</code></li>
+<li><code>CLOCK_MONOTONIC</code></li>
+</ol></li>
+<li>Sleep until 30 seconds after current time was retrieved on <code>CLOCK_MONOTONIC</code>. Use the absolute time flag (see <code>man clock_nanosleep</code> for more information).</li>
 </ol>
 <h2 id="analysis">Analysis</h2>
-<p>While running the program, you can access and terminate process using the following Linux tools and commands:</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a><span class="va">HELLO_PID=$(</span><span class="ex">pgrep</span> -f HelloWorld<span class="va">)</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true"></a><span class="fu">ps</span> -F -p <span class="va">${HELLO_PID}</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true"></a><span class="bu">kill</span> -s TERM <span class="va">${HELLO_PID}</span></span></code></pre></div>
+<p>While running the program during the 30 second pause in execution, you can access and terminate process using the following Linux tools and commands:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb22-1" title="1"><span class="va">HELLO_PID=$(</span><span class="ex">pgrep</span> -f HelloWorld<span class="va">)</span></a>
+<a class="sourceLine" id="cb22-2" title="2"><span class="fu">ps</span> -F -p <span class="va">${HELLO_PID}</span></a>
+<a class="sourceLine" id="cb22-3" title="3"><span class="bu">kill</span> -s TERM <span class="va">${HELLO_PID}</span></a></code></pre></div>
 <h2 id="submission">Submission</h2>
 <p>If you forked the repo on your personal GitHub, commit and push your changes, then download your repo as a zip file. If you do not use GitHub, compress the source code in a zip file or tar file. Have a look at <code>man tar</code> or <code>man zip</code> for more information. Once the code is submitted, it will be run using the command:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true"></a><span class="ex">./scripts/run_submission.sh</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb23-1" title="1"><span class="ex">./scripts/run_submission.sh</span></a></code></pre></div>
 <p>The expected contents of output_user.txt should be similar to:</p>
 <pre class="text"><code>pthread_setschedparam: Operation not permitted
 Hello World!
@@ -481,15 +496,14 @@ Hello World!
         max priority: 99
         thread priority: 60
         thread id: 140070128928576</code></pre>
-<h2 class="unnumbered" id="references">References</h2>
-<div id="refs" class="references" role="doc-bibliography">
+<h2 id="references" class="unnumbered">References</h2>
+<div id="refs" class="references">
 <div id="ref-Kerrisk2010">
 <p>[1] M. Kerrisk, <em>The linux programming interface : A linux and unix system programming handbook</em>. No Starch Press, 2010.</p>
 </div>
 </div>                    
                 </div>
             </div>
-
             <script src="https://vjs.zencdn.net/5.4.4/video.js"></script>
         </div>
     </body>
