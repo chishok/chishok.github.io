@@ -27,27 +27,26 @@
                 <title>CST 8703 Lab 1 - First Real-Time Kernel Jitters</title>
         <style type="text/css">code{white-space: pre;}</style>
                         <style type="text/css">
-            pre > code.sourceCode { white-space: pre; position: relative; }
-            pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-            pre > code.sourceCode > span:empty { height: 1.2em; }
-            code.sourceCode > span { color: inherit; text-decoration: inherit; }
+            a.sourceLine { display: inline-block; line-height: 1.25; }
+            a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+            a.sourceLine:empty { height: 1.2em; }
+            .sourceCode { overflow: visible; }
+            code.sourceCode { white-space: pre; position: relative; }
             div.sourceCode { margin: 1em 0; }
             pre.sourceCode { margin: 0; }
             @media screen {
             div.sourceCode { overflow: auto; }
             }
             @media print {
-            pre > code.sourceCode { white-space: pre-wrap; }
-            pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+            code.sourceCode { white-space: pre-wrap; }
+            a.sourceLine { text-indent: -1em; padding-left: 1em; }
             }
-            pre.numberSource code
-              { counter-reset: source-line 0; }
-            pre.numberSource code > span
-              { position: relative; left: -4em; counter-increment: source-line; }
-            pre.numberSource code > span > a:first-child::before
-              { content: counter(source-line);
+            pre.numberSource a.sourceLine
+              { position: relative; left: -4em; }
+            pre.numberSource a.sourceLine::before
+              { content: attr(title);
                 position: relative; left: -1em; text-align: right; vertical-align: baseline;
-                border: none; display: inline-block;
+                border: none; pointer-events: all; display: inline-block;
                 -webkit-touch-callout: none; -webkit-user-select: none;
                 -khtml-user-select: none; -moz-user-select: none;
                 -ms-user-select: none; user-select: none;
@@ -56,9 +55,9 @@
               }
             pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
             div.sourceCode
-              {  background-color: #f8f8f8; }
+              { background-color: #f8f8f8; }
             @media screen {
-            pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+            a.sourceLine::before { text-decoration: underline; }
             }
             code span.al { color: #ef2929; } /* Alert */
             code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
@@ -89,8 +88,7 @@
             code span.vs { color: #4e9a06; } /* VerbatimString */
             code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
         </style>
-                                               
-    </head>
+                                                </head>
 
     <body>
 
@@ -100,7 +98,7 @@
                         <div class="uk-grid" data-uk-grid-margin>
                 <div class="uk-width-1-1">
                     <h1 class="uk-heading-large">CST 8703 Lab 1 - First Real-Time Kernel Jitters</h1>
-                                        <h3 class="uk-heading-large">2022-05-01</p></h3>
+                                        <h3>2022-05-01</p></h3>
                                                             <p class="uk-text-large">Kyle Chisholm</p>
                                     </div>
             </div>
@@ -111,12 +109,15 @@
                         <div class="uk-panel uk-panel-box menu-begin" >
 
                                                         <ul>
-                                                        <li><a href="#background">Background</a></li>
-                                                        <li><a href="#materials">Materials</a></li>
-                                                        <li><a href="#methods">Methods</a></li>
-                                                        <li><a href="#deliverables">Deliverables</a></li>
-                                                        <li><a href="#references">References</a></li>
-                                                        </ul>
+                            <li><a href="#background">Background</a></li>
+                            <li><a href="#materials">Materials</a></li>
+                            <li><a href="#methods">Methods</a><ul>
+                            <li><a href="#prerequisites">Prerequisites</a></li>
+                            <li><a href="#cyclictest-system-latency-performance">Cyclictest System Latency Performance</a></li>
+                            <li><a href="#implement-timer">Implement timer</a></li>
+                            </ul></li>
+                            <li><a href="#analysis">Analysis</a></li>
+                            </ul>
                             
                         </div>
                     </div>
@@ -125,23 +126,148 @@
                 <div class="uk-width-medium-3-4">
 <p>Real-Time Systems and Embedded Programming</p>
 <p><strong>Submission Deadline</strong>: May 01, 2022</p>
-<p>Realtime profiling tools will be used to characterize the latency and time variation (jitter) of the system, and demonstrate the utility of a preemptible kernel in a hard realtime operating system. Signal handling is introduced to manage graceful process termination in an example program with single-threaded periodic timing.</p>
+<p>Realtime profiling tools will be used to characterize the latency and time variation (jitter) of the system, and demonstrate the utility of a preemptible kernel in a hard realtime operating system. A cyclic program with a fixed step timer will be created and timing analyzed.</p>
 <h2 id="background">Background</h2>
+<p>Hard real-time systems require operations to meet specified timing deadlines and a missed deadline is considered a system failure. For example, a digital control system such as a robotic manipulator may require a fixed interval timer. Filtering and closed-loop control systems are tuned based on a loop duration, also referred to as a “step size”. If this duration deviates from a specified tolerance, the control system may go unstable and lead to catastrophic failure. If the control loop itself is robust and won’t go unstable with variation in loop step size, a deviation from a robot trajectory, even over a short duration, may cause damage to surroundings or an individual interacting with the robot.</p>
+<p>Linux was not initially designed as a real-time operating system and meeting strict deadlines was less of a priority compared to providing a solid desktop computing user experience. The <a href="https://wiki.linuxfoundation.org/realtime/start">Linux real-time project</a> was established to incorporate changes into the mainline Linux kernel that allow the scheduler to be preempted by real-time processes. These changes (patches) can be enabled when configuring the Linux kernel. The following table provides links from the Linux Foundation with resources specific to the PREEMPT_RT kernel patch development:</p>
+<table>
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 68%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Link</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://wiki.linuxfoundation.org/realtime/documentation/technical_basics/start">Technical basics: Important aspects for real time</a></td>
+<td>A must-read regarding basics of preemption and real-time Linux</td>
+</tr>
+<tr class="even">
+<td><a href="https://wiki.linuxfoundation.org/realtime/documentation/howto/applications/start">HOWTO: RTOS and RT Applications</a></td>
+<td>Getting started with real-time application development for Linux</td>
+</tr>
+</tbody>
+</table>
+<p>Testing the embedded platform and the timing of your application is a necessary step in evaluating the capabilities of the software to meet hard timing deadlines. Hardware is typically supported by commercial RTOSes with Board Support Packages (BSPs) but with most free Linux distributions there are no officially supported real-time platforms. The <a href="https://www.osadl.org/">Open Source Automation Development Lab (OSADL)</a> runs a quality assessment “farm”, testing Linux configured with PREEMPT_RT on <a href="https://www.osadl.org/Boards-and-distros.qa-farm-boards-distros.0.html">many platforms and distributions</a>. Some of their boards under test are Raspberry Pis with latency plots and kernel configuration scripts made available online. The following plot is a sample latency histogram of a Raspberry Pi on the test rack:</p>
+<figure>
+<img src="r7s7s.gif" alt="Latency plot of Raspeberry Pi 4 on OSADL test rack" width="160" /><figcaption>Latency plot of Raspeberry Pi 4 on OSADL test rack</figcaption>
+</figure>
+<p>The latency is very good, with a maximum of 34us.</p>
+<figure>
+<img src="r7s3.gif" alt="Latency plot of original Raspeberry Pi on OSADL test rack" width="160" /><figcaption>Latency plot of original Raspeberry Pi on OSADL test rack</figcaption>
+</figure>
+<p><a href="https://wiki.linuxfoundation.org/realtime/documentation/technical_basics/latency">Latency</a> is a key metric of realtime performance. It is the delay after a timer is triggered before processing begins. For a timed loop, the latency must be low enough to allow sufficient processing time such that it can complete before the next timer deadline occurs. Debugging errors caused by spikes in latency can be difficult to track down since source of latency can come from the OS performing other tasks, and may not be easily reproducible.</p>
+<p>The program <a href="https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/cyclictest/start">Cyclictest</a> is a very useful tool for testing real-time performance (specifically timing latencies). In this lab, system latencies will be tested with <code>cyclictest</code>. Jitter is another metric commonly used in reference to network communications.</p>
 <h2 id="materials">Materials</h2>
+<ol type="1">
+<li><p><a href="https://www.raspberrypi.com/products/raspberry-pi-4-model-b/">Raspberry Pi 4</a> or <a href="https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/">Raspberry Pi Zero 2 W</a>.</p></li>
+<li><p>Desktop computer with Linux, Windows, or Mac operating system.</p></li>
+<li><p>Wired or wireless local network.</p></li>
+</ol>
 <h2 id="methods">Methods</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu">sudo</span> apt install -y <span class="kw">\</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>    <span class="ex">python3-numpy</span> <span class="kw">\</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>    <span class="ex">python3-matplotlib</span> <span class="kw">\</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>    <span class="ex">rt-tests</span></span></code></pre></div>
-<h2 id="deliverables">Deliverables</h2>
-<p>Run</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="ex">./scripts/run_submission.sh</span></span></code></pre></div>
-<p>Expected contents out output.txt:</p>
-<pre class="text"><code></code></pre>
-<h2 id="references">References</h2>                    
+<h3 id="prerequisites">Prerequisites</h3>
+<p>The program <code>cyclictest</code> is part of the package <code>rt-tests</code> and timing plots are generated with Python. Install the prerequisites on your pi with the commands:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="fu">sudo</span> apt install -y \</a>
+<a class="sourceLine" id="cb1-2" title="2">    python3-numpy \</a>
+<a class="sourceLine" id="cb1-3" title="3">    python3-matplotlib \</a>
+<a class="sourceLine" id="cb1-4" title="4">    rt-tests</a></code></pre></div>
+<h3 id="cyclictest-system-latency-performance">Cyclictest System Latency Performance</h3>
+<p>First check the kernel version with the command</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="fu">uname</span> -r</a></code></pre></div>
+<p>There should be no <code>-rt39</code> shown. This is the default (not fully preemptible) kernel installed on the Raspberry Pi. Run the script</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1"><span class="ex">./script/run_cyclictest.sh</span></a></code></pre></div>
+<p>The script will take a few minutes to complete. Some warnings appear which can be ignored. When it’s complete, there should be a new <code>data</code> folder created containing the histogram output text files and latency plots. The following figure shows an example output latency plot from a Raspberry Pi Zero 2 W without a preemptible kernel (no PREEMPT_RT patch):</p>
+<figure>
+<img src="cyclictest_noload.png" alt="Sample latency plot without PREEMPT_RT patch" /><figcaption>Sample latency plot without PREEMPT_RT patch</figcaption>
+</figure>
+<p>One filename is prefixed <code>cyclictest_noload</code> which was captured from running cyclictest without cpu-heavy processes running in the background. The other files prefixed <code>cyclictest_highload</code> was run with commands that intentionally utilize all four cores on the processor. Inspect the script <code>run_cyclictest.sh</code> to understand the commands that were used to generate the latency histogram plots.</p>
+<p>A preemptible kernel can be installed on a Raspberry Pi by following the <a href="https://github.com/kdoren/linux/wiki/Installation-of-kernel-from-deb-package-%28Raspberry-Pi-OS%29">directions on kdoren’s GitHub repository</a>. In order to install this kernel, run the script:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" title="1"><span class="ex">./script/install_raspi_rt_kernel.sh</span></a></code></pre></div>
+<p>Restart the Raspberry Pi. The new kernel should be installed. Check the kernel version with the command</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1"><span class="fu">uname</span> -r</a></code></pre></div>
+<p>Verify that the kernel version contains <code>-rt39</code> which signifies the PREEMPT_RT patch was applied. Test the patched version by running cyclictest again:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1"><span class="ex">./script/run_cyclictest.sh</span></a></code></pre></div>
+<p>Four more files should be added to the <code>data</code> folder with the new kernel suffix name.</p>
+<h3 id="implement-timer">Implement timer</h3>
+<p>Alter the target program <code>JitteryTimers</code> to implement a cyclic timer. Make your modifications between the comments</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb7-1" title="1">    <span class="co">/*</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="co">     * STUDENT WORK SECTION </span><span class="re">BEGIN</span></a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="co">     * ==========================</span></a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="co">     */</span></a></code></pre></div>
+<p>and</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb8-1" title="1">    <span class="co">/*</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="co">     * ========================</span></a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="co">     * STUDENT WORK SECTION </span><span class="re">END</span></a>
+<a class="sourceLine" id="cb8-4" title="4"><span class="co">     */</span></a></code></pre></div>
+<p>The files <code>main.c</code> and <code>ac_timing.c</code> require modifications. Refer to Linux foundation real-time HowTo pages online for hints on implementing the timed loop.</p>
+<p>Test the timed loop by running the script</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" title="1"><span class="ex">./scripts/run_submission.sh</span></a></code></pre></div>
+<p>The program will be run three times at different step sizes and durations. The output of the script should look something like:</p>
+<pre class="text"><code>Arguments parsed
+    step_size (us): 1000
+    duration (s): 5.00
+    filename: data/timeLogTs1000.dat
+    priority: 90
+Number of execution steps: 5000
+
+Process info:
+    timestamp: 2022-05-06 07:56:47
+    process id: 114288
+    thread policy: SCHED_RR
+    thread priority: 90
+    thread id: 139912015099712
+Number of bytes written to file &#39;data/timeLogTs1000.dat&#39;: 20000
+
+Arguments parsed
+    step_size (us): 500
+    duration (s): 5.00
+    filename: data/timeLogTs500.dat
+    priority: 90
+Number of execution steps: 10000
+
+Process info:
+    timestamp: 2022-05-06 07:56:54
+    process id: 114372
+    thread policy: SCHED_RR
+    thread priority: 90
+    thread id: 140333485930304
+Number of bytes written to file &#39;data/timeLogTs500.dat&#39;: 40000
+
+Arguments parsed
+    step_size (us): 100
+    duration (s): 5.00
+    filename: data/timeLogTs100.dat
+    priority: 90
+Number of execution steps: 50000
+
+Process info:
+    timestamp: 2022-05-06 07:57:01
+    process id: 114428
+    thread policy: SCHED_RR
+    thread priority: 90
+    thread id: 140471629178688
+Number of bytes written to file &#39;data/timeLogTs100.dat&#39;: 200000</code></pre>
+<p>Three plots are generated in the <code>data</code> folder showing the jitter and timing errors of each run. For example, the run with step size of 1000 microseconds should look like:</p>
+<figure>
+<img src="timeLogTs1000.png" alt="Jitter from time logged" /><figcaption>Jitter from time logged</figcaption>
+</figure>
+<h2 id="analysis">Analysis</h2>
+<p>Refer to the cyclictest latency plots and jitter time log when discussing the following points:</p>
+<ol type="1">
+<li>Compare the cyclictest latency plots.
+<ol type="1">
+<li>What are the differences between high-load and no-load latencies?</li>
+<li>What is the difference between linux with the PREEMPT_RT patch applied and without.</li>
+</ol></li>
+<li>Compare jitter and latency from the your implementation of a cyclic timer. What may be affecting the jitter and absolute error? Do you see drift in any of the time logs?</li>
+<li>What are possible sources of latency in the system?</li>
+</ol>                    
                 </div>
             </div>
-
             <script src="https://vjs.zencdn.net/5.4.4/video.js"></script>
         </div>
     </body>
