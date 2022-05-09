@@ -85,7 +85,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p class="date">2022-05-01</p>
 </header>
 <p>Real-Time Systems and Embedded Programming</p>
-<p><strong>Submission Deadline</strong>: May 01, 2022</p>
+<p><strong>Submission Deadline</strong>: May 19, 2022</p>
 <p><strong>Online version of this document</strong>: <a href="https://chishok.github.io/CST8703/CST8703-Lab0">https://chishok.github.io/CST8703/CST8703-Lab0</a></p>
 <p>This lab will provide a tutorial on how to install and configure a Raspberry Pi for remote development. POSIX with realtime extensions will be introduced and a Linux application written in C will showcase basic clock and pthread functions.</p>
 <blockquote>
@@ -93,11 +93,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </blockquote>
 <h2 id="background">Background</h2>
 <p>The Portable Operating System Interface (POSIX) provides an interface for operating systems, applications, and real-time embedded development on platforms like Linux, VxWorks, QNX, and many more. FreeRTOS, a popular Real-Time Operating System (RTOS), also provides a wrapper for the POSIX threading API (commonly known as pthreads).</p>
-<p>A robust development environment and tools are necessary for building and debugging applications. Proprietary Real-Time Operating Systems (RTOS) typically provide a host IDE with extensive documentation to get started. For Free and Open-Source Software (FOSS) such as the Linux operating system, development environments are as numerous are there are developers who use them. This lab provides a setup guide for the Raspberry Pi and a C development environment. Python, Bash, and CMake will also be used for scripting and managing the build and execution process. VS Code will be used as the primary IDE.</p>
+<p>A robust development environment and tools are necessary for building and debugging applications. Proprietary Real-Time Operating Systems (RTOS) typically provide a host IDE with extensive documentation to get started. For Free and Open-Source Software (FOSS) such as the Linux operating system, development environments are as numerous are there are developers who use them. This lab provides a setup guide for the Raspberry Pi and a C development environment. Python, Bash, and CMake will also be used for scripting and managing the build and execution process.</p>
+<p>The series of labs in this course make use of the “headless” version of the Raspberry Pi OS which does not have a desktop environment (graphical interface). A desktop environment can be installed, but embedded programming is typically done on a separate host machine with a cross-compiler and remote debugging tools. For the course labs, the embedded software is built and run on the target Raspberry Pi over a network connection. VS Code will be used as the primary Integrated Development Environment (IDE).</p>
 <blockquote>
 <p><strong><em>NOTE:</em></strong> This course is focused on developing real-time embedded applications. However, there are many other aspects of creating embedded Linux systems, including cross-compiling with toolchains, bootloaders, kernel configuration, filesystems, build systems, drivers. etc. <a href="https://www.amazon.ca/Mastering-Embedded-Linux-Programming-potential/dp/1789530385">Mastering Embedded Linux Programming</a> is a good reference to go deeper into these areas of embedded Linux systems, if interested.</p>
 </blockquote>
-<h3 id="useful-links-and-references-for-help-with-posix">Useful Links And References For Help With POSIX</h3>
+<h3 id="useful-links-and-references-for-help-with-c-posix-and-bash">Useful Links And References For Help With C, POSIX, and Bash</h3>
 <p>The Linux <code>man</code> pages are an indispensable tool for any systems developer, and especially for POSIX real-time systems. You can access man pages online at <a href="https://man7.org/linux/man-pages">https://man7.org/linux/man-pages</a> or simply use the command line tool <code>man</code> on any modern Linux distribution. Type <code>man man</code> in the terminal for more information. In addition to the course textbook, the following resources are helpful when writing code for embedded Linux:</p>
 <table>
 <colgroup>
@@ -127,9 +128,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </table>
 <h3 id="coding-best-practices-standards-and-formatting">Coding Best Practices, Standards, and Formatting</h3>
 <p>Adhering to coding standards and formatting can go a long way in maintaining readable “clean” code. Several configuration files, tools, and VS Code extensions are helpful when writing and debugging code. A brief description of the tools will be provided during the installation procedures in the <a href="#methods">Methods</a> section, but you are encouraged to learn more about them and personalize your development environment.</p>
+<h3 id="using-linux-with-the-command-line">Using Linux With the Command Line</h3>
+<p>The series of labs in this course require basic knowledge using a Bash shell (Linux command line). There are <a href="https://www.redhat.com/sysadmin/learn-bash-scripting">plenty of tutorials online</a> to gain familiarity with Bash. <a href="https://stackoverflow.com/">Stack overflow</a> and the <a href="https://stackexchange.com/sites">stack exchange network sites</a> are also excellent resources to find answers to programming questions, including C, Unix/Linux bash scripts and tools.</p>
 <h2 id="materials">Materials</h2>
 <ol type="1">
-<li><p><a href="https://www.raspberrypi.com/products/raspberry-pi-4-model-b/">Raspberry Pi 4</a> or <a href="https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/">Raspberry Pi Zero 2 W</a>.</p></li>
+<li><p><a href="https://www.raspberrypi.com/products/raspberry-pi-4-model-b/">Raspberry Pi 4</a> or <a href="https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/">Raspberry Pi Zero 2 W</a>.</p>
+<p>A Raspberry Pi also requires a power source, MicroSD card, and case. A breakout cable for the GPIO with a breadboard is also useful for prototyping with hardware. The following list of items link to accessories required for using the Raspberry Pi. It is encouraged to search for similar products if the cost is too high or the linked items are no longer available.</p>
+<ol type="1">
+<li><a href="https://www.amazon.ca/Enokay-Raspberry-Supply-Charger-Adapter/dp/B07VT554J1?th=1">Raspberry Pi 4 Power Supply 5V 3A USB C Charger Adapter</a></li>
+<li><a href="https://www.amazon.ca/gp/product/B07ZVJDRF3">Raspberry Pi 4 Case</a></li>
+<li><a href="https://www.amazon.ca/gp/product/B072XBX3XX">GPIO Breakout kit</a></li>
+<li><a href="https://www.amazon.ca/SanDisk-2-Pack-microSDHC-Memory-2x32GB/dp/B08J4HJ98L">32GB 2-Pack Ultra microSDHC</a></li>
+</ol></li>
+<li><p><a href="https://www.amazon.ca/Logitech-Widescreen-Calling-Recording-960-000694/dp/B004FHO5Y6/">Logitech C270 HD Webcam, HD 720p/30 fps</a></p></li>
 <li><p>Desktop computer with Linux, Windows, or Mac operating system.</p></li>
 <li><p>Wired or wireless local network.</p></li>
 </ol>
@@ -156,6 +167,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>Follow instructions online to <a href="https://code.visualstudio.com/Docs/setup/setup-overview">install VS Code</a>.</p></li>
 </ol>
 <h3 id="install-prerequisites-ubuntu-20.04">Install Prerequisites (Ubuntu 20.04)</h3>
+<blockquote>
+<p><strong><em>NOTE:</em></strong> Ignore these instructions if you are using Windows or Mac. The following software (including VS Code) is only required if your home desktop computer is running Ubuntu.</p>
+</blockquote>
 <p>In a bash terminal, run the following:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1"><span class="fu">sudo</span> apt install -y \</a>
 <a class="sourceLine" id="cb5-2" title="2">    git \</a>
@@ -264,7 +278,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb15-1" title="1"><span class="bu">echo</span> <span class="st">&quot;source </span><span class="va">${HOME}</span><span class="st">/.bash_profile&quot;</span> <span class="op">&gt;&gt;</span> <span class="va">${HOME}</span>/.bashrc</a></code></pre></div></li>
 </ol>
 <h3 id="hint-use-ssh-key-pair-to-connect-to-raspberry-pi">Hint: Use SSH key pair to Connect To Raspberry Pi</h3>
-<p>Exit the ssh connection with the command <code>exit</code> to return to your desktop computer command line. Follow these steps to conveniently connect to the raspberry pi without having to enter a username and password:</p>
+<p>Exit the ssh connection with the command <code>exit</code> to return to your desktop computer command line. Follow these steps from your home desktop computer to conveniently connect to the Raspberry Pi without having to enter a username and password:</p>
 <ol type="1">
 <li><p>Generate key pair</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode ps"><code class="sourceCode postscript"><a class="sourceLine" id="cb16-1" title="1">ssh-keygen -t rsa</a></code></pre></div>
