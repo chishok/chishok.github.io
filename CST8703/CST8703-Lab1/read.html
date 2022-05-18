@@ -114,10 +114,10 @@
 </table>
 <p>Testing the embedded platform and the timing of your application is a necessary step in evaluating the capabilities of the software to meet hard timing deadlines. Hardware is typically supported by commercial RTOSes with Board Support Packages (BSPs) but with most free Linux distributions there are no officially supported real-time platforms. The <a href="https://www.osadl.org/">Open Source Automation Development Lab (OSADL)</a> runs a quality assessment “farm”, testing Linux configured with PREEMPT_RT on <a href="https://www.osadl.org/Boards-and-distros.qa-farm-boards-distros.0.html">many platforms and distributions</a>. Some of their boards under test are Raspberry Pis with latency plots and kernel configuration scripts made available online. The following plots are sample latency histograms of a multi-core Raspberry Pi 4 and an original single-core module on the test rack:</p>
 <figure>
-<img src="r7s7s.png" width="640" alt="" /><figcaption>Latency plot of Raspeberry Pi 4 on OSADL test rack r7s7s</figcaption>
+<img src="r7s7s.png" width="640" alt="" /><figcaption>Latency plot of Raspberry Pi 4 on OSADL test rack r7s7s</figcaption>
 </figure>
 <figure>
-<img src="r7s3.png" width="640" alt="" /><figcaption>Latency plot of original Raspeberry Pi (single core CPU) on OSADL test rack r7s3</figcaption>
+<img src="r7s3.png" width="640" alt="" /><figcaption>Latency plot of original Raspberry Pi (single core CPU) on OSADL test rack r7s3</figcaption>
 </figure>
 <p><a href="https://wiki.linuxfoundation.org/realtime/documentation/technical_basics/latency">Latency</a> is a key metric of realtime performance. It is the delay after a timer is triggered before processing begins. For a timed loop, the latency must be low enough to allow sufficient processing time such that it can complete before the next timer deadline occurs. Debugging errors caused by spikes in latency can be difficult to track down since source of latency can come from the OS performing other tasks, and may not be easily reproducible.</p>
 <p>The program <a href="https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/cyclictest/start">Cyclictest</a> is a very useful tool for testing real-time performance (specifically timing latencies). In this lab, system latencies will be tested with <code>cyclictest</code>. Jitter is another metric commonly used in reference to network communications.</p>
@@ -167,8 +167,32 @@
 <p>Test the cyclic timed loop by running the script</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="ex">./scripts/run_submission.sh</span></span></code></pre></div>
 <p>The program will be run three times at different step sizes and durations:</p>
-<div class="line-block">Step Size (us) | Duration (s) | Data File |</div>
-<p>||| |||</p>
+<table>
+<thead>
+<tr class="header">
+<th>Step Size (us)</th>
+<th>Duration (s)</th>
+<th>Data File</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1000</td>
+<td>5</td>
+<td>timeLogTs1000.dat</td>
+</tr>
+<tr class="even">
+<td>500</td>
+<td>5</td>
+<td>timeLogTs500.dat</td>
+</tr>
+<tr class="odd">
+<td>100</td>
+<td>5</td>
+<td>timeLogTs100.dat</td>
+</tr>
+</tbody>
+</table>
 <p>Three plots are generated in the <code>data</code> folder showing the jitter and timing errors of each run. The python script <code>./scripts/plot_timing.py</code> plots the data saved to file. Read the script <code>./scripts/run_submission.sh</code> to understand how the software is built from source and is run. Experiment with different combinations of duration and step size. The output plot of a run at step size of 1000us may look something like this (run on a Pi Zero 2 W):</p>
 <p><img src="timeLogTs1000.png" width="640" alt="Jitter from time logged at step size of 1000us" /> For example, the run with step size of 1000 microseconds should look like:</p>
 <p>The output printed to terminal while the script runs may look like this:</p>
@@ -229,6 +253,7 @@ Number of bytes written to file &#39;data/timeLogTs100.dat&#39;: 200000</code></
 <ol type="1">
 <li>What may be affecting the jitter and absolute error?</li>
 <li>Do you see time drift in any of the plots?</li>
+<li>Why is the x-axis of the 100us step size plots different from the others?</li>
 </ol></li>
 <li>What are possible sources of latency in the system?</li>
 </ol>
