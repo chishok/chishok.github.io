@@ -480,13 +480,13 @@
 <li><p>Locate the built program <code>CST8703Lab0-HelloWorld</code> in the folder <code>./build/HelloWorld/CST8703Lab0-HelloWorld</code> and run it in the terminal:</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true"></a><span class="ex">./build/HelloWorld/CST8703Lab0-HelloWorld</span></span></code></pre></div>
 <p>The output should show information about the process. If you see the priority and policy as</p>
-<pre class="text"><code>    thread policy: SCHED_OTHER
+<pre class="text"><code>    policy: SCHED_OTHER
     thread priority: 0</code></pre>
 <p>then it likely did not have permission to change the scheduling and priority.</p></li>
 <li><p>Re-run with <code>sudo</code></p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true"></a><span class="fu">sudo</span> ./build/HelloWorld/CST8703Lab0-HelloWorld</span></code></pre></div>
 <p>and it should output the desired policy and priority:</p>
-<pre class="text"><code>    thread policy: SCHED_RR
+<pre class="text"><code>    policy: SCHED_RR
     thread priority: 90</code></pre></li>
 <li><p>Open a second terminal. It’s recommended to use VS Code’s <a href="https://code.visualstudio.com/docs/editor/integrated-terminal">integrated terminal</a> and split it so you have two <a href="https://code.visualstudio.com/docs/editor/integrated-terminal#_grouping">side-by-side</a>.</p></li>
 <li><p>Run the program on the left terminal without using <code>sudo</code>.</p>
@@ -549,7 +549,7 @@ chishok  16607 16462  0   613   604   4 23:50 pts/8    00:00:00 ./build/HelloWor
         policy: SCHED_RR
         min priority: 1
         max priority: 99
-        thread priority: 60
+        thread priority: 90
         thread id: 140532105078592
 
 Waiting for 30 seconds...
