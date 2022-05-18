@@ -432,7 +432,7 @@
 </figure>
 <p>More information on <a href="https://code.visualstudio.com/docs/cpp/cpp-debug">debugging in VS Code can be found online</a>.</p></li>
 </ol>
-<h3 id="provide-thread-and-timing-information">Provide thread and timing information</h3>
+<h3 id="coding-task-provide-thread-and-timing-information">Coding Task: Provide thread and timing information</h3>
 <p>Alter the target program to set scheduling parameters of the main thread, retrieve time, and cause the main program to sleep for 30 seconds. Make your modifications between the comments</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a>    <span class="co">/*</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true"></a><span class="co">     * STUDENT WORK SECTION </span><span class="re">BEGIN</span></span>
@@ -459,21 +459,52 @@
 <li>Minimum priority for current scheduling policy</li>
 <li>Maximum priority for current scheduling policy</li>
 </ol></li>
-<li>Get the current time form the following real-time clocks:
+<li>Get the current time from the following real-time clocks:
+<ol type="1">
+<li><code>CLOCK_REALTIME</code></li>
+<li><code>CLOCK_MONOTONIC</code></li>
+</ol></li>
+<li>Get the resolution of the following real-time clocks:
 <ol type="1">
 <li><code>CLOCK_REALTIME</code></li>
 <li><code>CLOCK_MONOTONIC</code></li>
 </ol></li>
 <li>Sleep until 30 seconds after current time was retrieved on <code>CLOCK_MONOTONIC</code>. Use the absolute time flag (see <code>man clock_nanosleep</code> for more information).</li>
 </ol>
+<h3 id="run-the-program-from-terminal">Run the Program From Terminal</h3>
+<ol type="1">
+<li><p>Build and run the code using the CMake-Tools in VS Code by using the taskbar buttons at the bottom of the window or commands with <code>Ctrl+Shift+P</code> (refer to instructions above for details).</p></li>
+<li><p>Locate the built program <code>CST8703Lab0-HelloWorld</code> in the folder <code>./build/JitteryTimers/CST8703Lab1-JitteryTimers</code> and run it in the terminal:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true"></a><span class="ex">./build/JitteryTimers/CST8703Lab1-JitteryTimers</span></span></code></pre></div>
+<p>The output should show information about the process. If you see the priority and policay as</p>
+<pre class="text"><code>    thread policy: SCHED_OTHER
+    thread priority: 0</code></pre>
+<p>then it likely did not have permission to change the scheduling and priority.</p></li>
+<li><p>Re-run with <code>sudo</code></p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true"></a><span class="fu">sudo</span> ./build/JitteryTimers/CST8703Lab1-JitteryTimers</span></code></pre></div>
+<p>and it should output the desired policy and priority:</p>
+<pre class="text"><code>    thread policy: SCHED_RR
+    thread priority: 90</code></pre></li>
+<li><p>Open a second terminal. It’s recommended to use VS Code’s <a href="https://code.visualstudio.com/docs/editor/integrated-terminal">integrated terminal</a> and split it so you have two <a href="https://code.visualstudio.com/docs/editor/integrated-terminal#_grouping">side-by-side</a>.</p></li>
+<li><p>Run the program on the left terminal without using <code>sudo</code>.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true"></a><span class="ex">./build/JitteryTimers/CST8703Lab1-JitteryTimers</span></span></code></pre></div></li>
+<li><p>While running the program during the 30 second pause in execution, access and terminate process using the following Linux tools and commands in the second termianl to the right:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true"></a><span class="va">HELLO_PID=$(</span><span class="ex">pgrep</span> -f HelloWorld<span class="va">)</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true"></a><span class="fu">ps</span> -F -p <span class="va">${HELLO_PID}</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true"></a><span class="bu">kill</span> -s TERM <span class="va">${HELLO_PID}</span></span></code></pre></div></li>
+</ol>
 <h2 id="analysis">Analysis</h2>
-<p>While running the program during the 30 second pause in execution, you can access and terminate process using the following Linux tools and commands:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true"></a><span class="va">HELLO_PID=$(</span><span class="ex">pgrep</span> -f HelloWorld<span class="va">)</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true"></a><span class="fu">ps</span> -F -p <span class="va">${HELLO_PID}</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true"></a><span class="bu">kill</span> -s TERM <span class="va">${HELLO_PID}</span></span></code></pre></div>
+<ol type="1">
+<li>What does the command <code>pgrep -f HelloWorld</code> do?</li>
+<li>Does the process idea printed out when you run the program consistent with the result of <code>pgrep -f HelloWorld</code> while it’s running?</li>
+<li>What does the command <code>ps -F -p ${HELLO_PID}</code> do?</li>
+<li>What does the command <code>kill -s TERM ${HELLO_PID}</code> do? What is the meaning of the word <code>TERM</code> in this command?</li>
+<li>Why are <code>root</code> user privileges required (using “super-user do” command <code>sudo</code>) for the program to be able to modify real-time scheduling and priority?</li>
+</ol>
 <h2 id="submission">Submission</h2>
+<p>Provide a short report with Your</p>
 <p>If you forked the repo on your personal GitHub, commit and push your changes, then download your repo as a zip file. If you do not use GitHub, compress the source code in a zip file or tar file. Have a look at <code>man tar</code> or <code>man zip</code> for more information. Once the code is submitted, it will be run using the command:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true"></a><span class="ex">./scripts/run_submission.sh</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true"></a><span class="ex">./scripts/run_submission.sh</span></span></code></pre></div>
 <p>The expected contents of output_user.txt should be similar to:</p>
 <pre class="text"><code>pthread_setschedparam: Operation not permitted
 Hello World!
