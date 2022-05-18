@@ -511,34 +511,49 @@
 <p>The expected contents of output_user.txt should be similar to:</p>
 <pre class="text"><code>pthread_setschedparam: Operation not permitted
 Hello World!
-    timestamp: 2022-04-12 00:28:02
-    realtime (epoch) seconds: 1649737682
-                 nanoseconds: 34219300
-    monotonic seconds: 16825
-          nanoseconds: 810159100
-    process id: 6393
+    timestamp: 2022-05-17 23:50:55
+    CLOCK_REALTIME (epoch)
+                  seconds: 1652845596
+              nanoseconds: 125681800
+        resolution (nsec): 1
+    CLOCK_MONOTONIC
+                  seconds: 24198
+              nanoseconds: 538200
+        resolution (nsec): 1
+    process id: 16222
     user id: 1000
     Main thread info:
         policy: SCHED_OTHER
         min priority: 0
         max priority: 0
         thread priority: 0
-        thread id: 140268182656832</code></pre>
+        thread id: 140187543078720
+
+Waiting for 30 seconds...
+UID        PID  PPID  C    SZ   RSS PSR STIME TTY          TIME CMD
+chishok  16607 16462  0   613   604   4 23:50 pts/8    00:00:00 ./build/HelloWorld/CST8703Lab0-HelloWorld</code></pre>
 <p>The expected contents of output_root.txt:</p>
 <pre class="text"><code>Hello World!
-    timestamp: 2022-04-12 00:29:00
-    realtime (epoch) seconds: 1649737740
-                 nanoseconds: 710771700
-    monotonic seconds: 16884
-          nanoseconds: 486711600
-    process id: 6446
+    timestamp: 2022-05-17 23:50:59
+    CLOCK_REALTIME (epoch)
+                  seconds: 1652845601
+              nanoseconds: 880888700
+        resolution (nsec): 1
+    CLOCK_MONOTONIC
+                  seconds: 24203
+              nanoseconds: 755745100
+        resolution (nsec): 1
+    process id: 16251
     user id: 0
     Main thread info:
         policy: SCHED_RR
         min priority: 1
         max priority: 99
         thread priority: 60
-        thread id: 140070128928576</code></pre>
+        thread id: 140532105078592
+
+Waiting for 30 seconds...
+Done.</code></pre>
 <h2 class="unnumbered" id="references">References</h2>
 <div id="refs" class="references" role="doc-bibliography">
 <div id="ref-Kerrisk2010">
