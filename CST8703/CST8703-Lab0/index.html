@@ -23,7 +23,7 @@
 
         <meta name="generator" content="pandoc-uikit" />
                 <meta name="author" content="Kyle Chisholm" />
-                        <meta name="date" content="2022-05-01" />
+                        <meta name="date" content="2022-05-17" />
                 <title>CST 8703 Lab 0 - Hello Real-Time World</title>
         <style type="text/css">code{white-space: pre;}</style>
                         <style type="text/css">
@@ -100,7 +100,7 @@
                         <div class="uk-grid" data-uk-grid-margin>
                 <div class="uk-width-1-1">
                     <h1 class="uk-heading-large">CST 8703 Lab 0 - Hello Real-Time World</h1>
-                                        <h3>2022-05-01</p></h3>
+                                        <h3>2022-05-17</p></h3>
                                                             <p class="uk-text-large">Kyle Chisholm</p>
                                     </div>
             </div>
@@ -357,7 +357,10 @@
 <figure>
 <img src="Lab0-RaspberryPiHookUp.png" width="720" alt="" /><figcaption>Diagram of local network to connect to raspberry pi</figcaption>
 </figure>
-<p>The instructions provided here assume the personal computer and raspberry pi can connect to the same local network provided by a router. Otherwise, a static IP and direct connection can be configured as follows:</p>
+<blockquote>
+<p><strong>NOTE</strong>: If you have access to a common local network provided by a router, there is no need to connect over a static IP address.</p>
+</blockquote>
+<p>A static IP and direct connection can be configured as follows:</p>
 <ol type="1">
 <li><p>Attach a keyboard an monitor to the Raspberry Pi and login.</p></li>
 <li><p>Attach an ethernet cable to the Raspberry Pi 4 or to a USB-Ethernet adapter on the Zero 2 W. Attach the other end to your desktop or laptop computer.</p></li>
@@ -531,21 +534,21 @@
 <h3 id="run-the-program-from-terminal">Run the Program From Terminal</h3>
 <ol type="1">
 <li><p>Build and run the code using the CMake-Tools in VS Code by using the taskbar buttons at the bottom of the window or commands with <code>Ctrl+Shift+P</code> (refer to instructions above for details).</p></li>
-<li><p>Locate the built program <code>CST8703Lab0-HelloWorld</code> in the folder <code>./build/JitteryTimers/CST8703Lab1-JitteryTimers</code> and run it in the terminal:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true"></a><span class="ex">./build/JitteryTimers/CST8703Lab1-JitteryTimers</span></span></code></pre></div>
-<p>The output should show information about the process. If you see the priority and policay as</p>
+<li><p>Locate the built program <code>CST8703Lab0-HelloWorld</code> in the folder <code>./build/HelloWorld/CST8703Lab0-HelloWorld</code> and run it in the terminal:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true"></a><span class="ex">./build/HelloWorld/CST8703Lab0-HelloWorld</span></span></code></pre></div>
+<p>The output should show information about the process. If you see the priority and policy as</p>
 <pre class="text"><code>    thread policy: SCHED_OTHER
     thread priority: 0</code></pre>
 <p>then it likely did not have permission to change the scheduling and priority.</p></li>
 <li><p>Re-run with <code>sudo</code></p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true"></a><span class="fu">sudo</span> ./build/JitteryTimers/CST8703Lab1-JitteryTimers</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true"></a><span class="fu">sudo</span> ./build/HelloWorld/CST8703Lab0-HelloWorld</span></code></pre></div>
 <p>and it should output the desired policy and priority:</p>
 <pre class="text"><code>    thread policy: SCHED_RR
     thread priority: 90</code></pre></li>
 <li><p>Open a second terminal. It’s recommended to use VS Code’s <a href="https://code.visualstudio.com/docs/editor/integrated-terminal">integrated terminal</a> and split it so you have two <a href="https://code.visualstudio.com/docs/editor/integrated-terminal#_grouping">side-by-side</a>.</p></li>
 <li><p>Run the program on the left terminal without using <code>sudo</code>.</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true"></a><span class="ex">./build/JitteryTimers/CST8703Lab1-JitteryTimers</span></span></code></pre></div></li>
-<li><p>While running the program during the 30 second pause in execution, access and terminate process using the following Linux tools and commands in the second termianl to the right:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true"></a><span class="ex">./build/HelloWorld/CST8703Lab0-HelloWorld</span></span></code></pre></div></li>
+<li><p>While running the program during the 30 second pause in execution, access and terminate process using the following Linux tools and commands in the second terminal to the right:</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true"></a><span class="va">HELLO_PID=$(</span><span class="ex">pgrep</span> -f HelloWorld<span class="va">)</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true"></a><span class="fu">ps</span> -F -p <span class="va">${HELLO_PID}</span></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true"></a><span class="bu">kill</span> -s TERM <span class="va">${HELLO_PID}</span></span></code></pre></div></li>
