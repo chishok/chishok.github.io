@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>CST 8703 Lab 2 - Meeting Deadlines To Stay Live</title>
+        <title>CST 8703 Lab 2 - Fresh Threads</title>
         <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
         <link rel="apple-touch-icon-precomposed" href="images/apple-touch-icon.png">
 
@@ -23,8 +23,8 @@
 
         <meta name="generator" content="pandoc-uikit" />
                 <meta name="author" content="Kyle Chisholm" />
-                        <meta name="date" content="2022-05-01" />
-                <title>CST 8703 Lab 2 - Meeting Deadlines To Stay Live</title>
+                        <meta name="date" content="2022-05-17" />
+                <title>CST 8703 Lab 2 - Fresh Threads</title>
         <style type="text/css">code{white-space: pre;}</style>
                         <style type="text/css">
             pre > code.sourceCode { white-space: pre; position: relative; }
@@ -89,7 +89,8 @@
             code span.vs { color: #4e9a06; } /* VerbatimString */
             code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
         </style>
-                                               
+                                            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
+                               
     </head>
 
     <body>
@@ -99,8 +100,8 @@
 
                         <div class="uk-grid" data-uk-grid-margin>
                 <div class="uk-width-1-1">
-                    <h1 class="uk-heading-large">CST 8703 Lab 2 - Meeting Deadlines To Stay Live</h1>
-                                        <h3 class="uk-heading-large">2022-05-01</p></h3>
+                    <h1 class="uk-heading-large">CST 8703 Lab 2 - Fresh Threads</h1>
+                                        <h3>2022-05-17</p></h3>
                                                             <p class="uk-text-large">Kyle Chisholm</p>
                                     </div>
             </div>
@@ -111,11 +112,22 @@
                         <div class="uk-panel uk-panel-box menu-begin" >
 
                                                         <ul>
-                                                        <li><a href="#background">Background</a></li>
+                                                        <li><a href="#background">Background</a>
+                                                        <ul>
+                                                        <li><a href="#posix-threads">POSIX Threads</a></li>
+                                                        <li><a href="#mutexes">Mutexes</a></li>
+                                                        <li><a href="#condition-variables">Condition Variables</a></li>
+                                                        <li><a href="#best-practices">Best Practices</a></li>
+                                                        <li><a href="#coding-task-freshthreads-background">Coding Task: FreshThreads Background</a></li>
+                                                        </ul></li>
                                                         <li><a href="#materials">Materials</a></li>
-                                                        <li><a href="#methods">Methods</a></li>
-                                                        <li><a href="#deliverables">Deliverables</a></li>
-                                                        <li><a href="#references">References</a></li>
+                                                        <li><a href="#methods">Methods</a>
+                                                        <ul>
+                                                        <li><a href="#prerequisites">Prerequisites</a></li>
+                                                        <li><a href="#coding-task-make-freshthreads-thread-safe">Coding Task: Make FreshThreads Thread-Safe</a></li>
+                                                        </ul></li>
+                                                        <li><a href="#analysis">Analysis</a></li>
+                                                        <li><a href="#submission">Submission</a></li>
                                                         </ul>
                             
                         </div>
@@ -124,17 +136,423 @@
 
                 <div class="uk-width-medium-3-4">
 <p>Real-Time Systems and Embedded Programming</p>
-<p>Multi-threading and timing facilities will be used to manage strict periodic deadlines in a simulated controller software example. Sensors, actuators, and commands require careful thread synchronization in a multi-rate control system.</p>
-<p><strong>Submission Deadline</strong>: May 01, 2022</p>
+<p>Inter-thread communication is introduced with an example where data is shared and altered amongst many threads. Concurrent programming strategies are employed to ensure data integrity and the expected output.</p>
+<p>Source code available at <a href="https://github.com/chishok/CST8703-Lab2">https://github.com/chishok/CST8703-Lab2</a>.</p>
+<p><strong>Submission Deadline</strong>: June 23, 2022</p>
 <h2 id="background">Background</h2>
+<p>Multi-threaded programs involve sharing data between threads, commonly referred to as Inter Thread Communication (ITC). Using multiple threads has the advantage of running processes in parallel. For real-time processes, tasks in each thread can be scheduled to run within guaranteed deadlines. However, care must be taken to ensure the software is “thread-safe” and data passing between threads is not corrupted. There are several methods of passing and protecting data with POSIX threads. This lab will introduce Threads, Mutexes, and Condition Variables to demonstrate safe inter-thread-communication.</p>
+<h3 id="posix-threads">POSIX Threads</h3>
+<p>A specific function signature is required to launch a new thread. The function which will launch a new thread is <a href="https://man7.org/linux/man-pages/man3/pthread_create.3.html"><code>pthread_create</code></a> with the following signature:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="dt">int</span> pthread_create(pthread_t *thread, <span class="dt">const</span> pthread_attr_t *attr,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>                   <span class="dt">void</span> *(*start_routine) (<span class="dt">void</span> *), <span class="dt">void</span> *arg);</span></code></pre></div>
+<p>For more details, read the man page form your terminal <code>man pthread_create</code>. The following table provides a brief overview of each argument:</p>
+<table>
+<colgroup>
+<col style="width: 43%" />
+<col style="width: 56%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>thread</code></td>
+<td>Output thread handle (a number associated with the thread).</td>
+</tr>
+<tr class="even">
+<td><code>attr</code></td>
+<td>Options for the thread, such as scheduling priority and policy, stack size (memory available to thread), CPU affinity, etc.</td>
+</tr>
+<tr class="odd">
+<td><code>start_routine</code></td>
+<td>A function to be run as a thread, with one input to a <code>void</code> (generic) pointer and a return pointer.</td>
+</tr>
+<tr class="even">
+<td><code>arg</code></td>
+<td>The argument that will be passed to the <code>start_routine</code> function when it is run.</td>
+</tr>
+</tbody>
+</table>
+<p>If data is to be shared between threads, it’s best practice to pass the data structure as an argument (to <code>arg</code>) rather than using global variables. The thread that called <a href="https://man7.org/linux/man-pages/man3/pthread_create.3.html"><code>pthread_create</code></a> should then wait for the thread(s) to finish by calling <a href="https://man7.org/linux/man-pages/man3/pthread_join.3.html"><code>pthread_join</code></a> on each thread id.</p>
+<p>An example of spawning two threads:</p>
+<blockquote>
+<p><strong>NOTE</strong>: Return values should always be checked. This example does not check errors.</p>
+</blockquote>
+<ol type="1">
+<li><p>Define a struct data type to pass to thread</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">typedef</span> <span class="kw">struct</span> Data</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>{</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>    <span class="dt">int</span> value;</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>} Data;</span></code></pre></div></li>
+<li><p>Define a function to be run as a thread. Inside the function, cast the pointer to the data type. Some of this data may be shared with other threads also spawned by the main (manager) process.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="dt">void</span> *my_thread_example(<span class="dt">void</span> *opt)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>{</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>    Data *thread_data = (Data *)opt;</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>    printf(<span class="st">&quot;Data value is %d</span><span class="sc">\n</span><span class="st">&quot;</span>, thread_data-&gt;value);</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>    <span class="cf">return</span> NULL;</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a>}</span></code></pre></div></li>
+<li><p>In the main function, create data object</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>Data my_data = {.value = <span class="dv">1</span>};</span></code></pre></div></li>
+<li><p>Create thread attributes</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>pthread_attr_t pattr;</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>pthread_attr_init(&amp;pattr);</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="co">// Set desired attributes, or leave with default values.</span></span></code></pre></div></li>
+<li><p>Spawn the threads. Shared data value is modified after first call to <code>pthread_create</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>pthread_t id_a = <span class="dv">0</span>;</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>pthread_t id_b = <span class="dv">0</span>;</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>pthread_create(&amp;id_a, &amp;pattr, my_thread_example, &amp;my_data);</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>my_data.value = <span class="dv">2</span>;</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>pthread_create(&amp;id_b, &amp;pattr, my_thread_example, &amp;my_data);</span></code></pre></div></li>
+<li><p>Joint threads. This will block (wait) until the threads finish processing.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a>pthread_join(id_a, NULL);</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>pthread_join(id_b, NULL);</span></code></pre></div></li>
+</ol>
+<p>The full example code is:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="pp">#define _POSIX_C_SOURCE 200809L</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a><span class="pp">#include </span><span class="im">&lt;pthread.h&gt;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a><span class="kw">typedef</span> <span class="kw">struct</span> Data</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a>{</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a>    <span class="dt">int</span> value;</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a>} Data;</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true"></a><span class="dt">void</span> *my_thread_example(<span class="dt">void</span> *opt)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true"></a>{</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true"></a>    Data *thread_data = (Data *)opt;</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true"></a>    printf(<span class="st">&quot;Data value is %d</span><span class="sc">\n</span><span class="st">&quot;</span>, thread_data-&gt;value);</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true"></a>    <span class="cf">return</span> NULL;</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true"></a>}</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true"></a><span class="dt">int</span> main(<span class="dt">void</span>)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true"></a>{</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true"></a>    Data my_data = {.value = <span class="dv">1</span>};</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true"></a></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true"></a>    pthread_attr_t pattr;</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true"></a>    pthread_attr_init(&amp;pattr);</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true"></a></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true"></a>    pthread_t id_a = <span class="dv">0</span>;</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true"></a>    pthread_t id_b = <span class="dv">0</span>;</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true"></a></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true"></a>    pthread_create(&amp;id_a, &amp;pattr, my_thread_example, &amp;my_data);</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true"></a>    my_data.value = <span class="dv">2</span>;</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true"></a>    pthread_create(&amp;id_b, &amp;pattr, my_thread_example, &amp;my_data);</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true"></a></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true"></a>    pthread_join(id_a, NULL);</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true"></a>    pthread_join(id_b, NULL);</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true"></a></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true"></a>    <span class="cf">return</span> <span class="dv">0</span>;</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true"></a>}</span></code></pre></div>
+<p>In this example, the shared data has a value initialized to <code>1</code> and appears to be modified after creating the first thread, but it will in fact be set to <code>2</code> before printing “Data value is 2” twice. In order to properly control how and when data is read or written by multiple threads, mutexes and condition variables described in the following sections are required.</p>
+<h3 id="mutexes">Mutexes</h3>
+<p>Mutexes can be used to manage concurrent access to data from multiple threads. A mutex is first locked by a thread that wishes to have exclusive access to shared resources. The thread will then operate on the shared data and once operations are complete, the mutex is unlocked and other threads can in turn lock it. POSIX mutexes have the type <code>pthread_mutex_t</code>, are initialized with the function <a href="https://man7.org/linux/man-pages/man3/pthread_mutex_init.3p.html"><code>pthread_mutex_init</code></a> and can be locked and unlocked with the functions <a href="https://man7.org/linux/man-pages/man3/pthread_mutex_lock.3p.html"><code>pthread_mutex_lock</code></a> and <a href="https://man7.org/linux/man-pages/man3/pthread_mutex_unlock.3p.html"><code>pthread_mutex_unlock</code></a>. Refer to the man pages for each of these functions for more information. The following sequence diagram shows how threads use a mutex:</p>
+<figure>
+<img src="Lab2-mutex-sequence.svg" width="640" alt="" /><figcaption>Mutex sequence with multiple threads</figcaption>
+</figure>
+<p>Mutexes can cause issues when multiple resources are being locked and accessed by multiple threads. A classic example is deadlock when it becomes impossible for multiple threads to proceed because they are waiting to lock mutexes which will never be unlocked. The following sequence diagram shows how a deadlock can occur:</p>
+<figure>
+<img src="Lab2-mutex-sequence.svg" width="640" alt="" /><figcaption>Mutex deadlock</figcaption>
+</figure>
+<p>A lock may be held for too long and a critical deadline can be exceeded in a real-time application such as a controller with a periodic task. In order to guard against excessive blocking durations and prevent tasks from exceeding their deadlines, a timeout can be used on blocking calls to lock a mutex. With POSIX, the function <a href="https://man7.org/linux/man-pages/man3/pthread_mutex_timedlock.3p.html"><code>pthread_mutex_timedlock</code></a> uses a timeout.</p>
+<blockquote>
+<p><strong>NOTE</strong>: The mutex lock with a timeout (<a href="https://man7.org/linux/man-pages/man3/pthread_mutex_timedlock.3p.html"><code>pthread_mutex_timedlock</code></a>) is an <strong>absolute</strong> time with <code>CLOCK_REALTIME</code>. Be careful to take the current time, then add the duration of the timeout to be used with the function. The nanosecond component of <code>struct timespec</code> must also be greater or equal to zero and less than 1e9.</p>
+</blockquote>
+<p>An example of spawning two threads with a mutex:</p>
+<blockquote>
+<p><strong>NOTE</strong>: Return values should always be checked. This example does not check for errors.</p>
+</blockquote>
+<div class="sourceCode" id="cb9"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="pp">#define _POSIX_C_SOURCE 200809L</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a><span class="pp">#include </span><span class="im">&lt;pthread.h&gt;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a><span class="kw">typedef</span> <span class="kw">struct</span> Data</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a>{</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a>    pthread_mutex_t mutex;</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a>    <span class="dt">int</span> value;</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a>} Data;</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true"></a><span class="dt">void</span> *my_thread_example(<span class="dt">void</span> *opt)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true"></a>{</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true"></a>    Data *thread_data = (Data *)opt;</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true"></a>    pthread_mutex_lock(&amp;thread_data-&gt;mutex);</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true"></a>    thread_data-&gt;value += <span class="dv">1</span>;</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true"></a>    printf(<span class="st">&quot;Data value is %d</span><span class="sc">\n</span><span class="st">&quot;</span>, thread_data-&gt;value);</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true"></a>    fflush(NULL);</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true"></a>    pthread_mutex_unlock(&amp;thread_data-&gt;mutex);</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true"></a></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true"></a>    <span class="cf">return</span> NULL;</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true"></a>}</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true"></a></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true"></a><span class="dt">int</span> main(<span class="dt">void</span>)</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true"></a>{</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true"></a>    Data my_data = {.value = <span class="dv">1</span>};</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true"></a>    pthread_mutex_init(&amp;my_data.mutex, NULL);</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true"></a></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true"></a>    pthread_attr_t pattr;</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true"></a>    pthread_attr_init(&amp;pattr);</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true"></a></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true"></a>    pthread_t id_a = <span class="dv">0</span>;</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true"></a>    pthread_t id_b = <span class="dv">0</span>;</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true"></a></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true"></a>    pthread_create(&amp;id_a, &amp;pattr, my_thread_example, &amp;my_data);</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true"></a>    pthread_create(&amp;id_b, &amp;pattr, my_thread_example, &amp;my_data);</span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true"></a></span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true"></a>    pthread_join(id_a, NULL);</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true"></a>    pthread_join(id_b, NULL);</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true"></a></span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true"></a>    <span class="cf">return</span> <span class="dv">0</span>;</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true"></a>}</span></code></pre></div>
+<p>Output of the example is</p>
+<pre class="text"><code>Data value is 2
+Data value is 3</code></pre>
+<p>In the thread function <code>my_thread_example</code>, the data is only modified and printed between mutex lock and unlock commands. This prevents the second thread from modifying the data at the same time.</p>
+<h3 id="condition-variables">Condition Variables</h3>
+<p>A condition variable is used to signal to other threads when shared data is modified and ready to check. A mutex is still necessary to prevent threads from accessing the same data but one or more threads can wait on a condition variable to be notified about changes in a shared state. The notification comes from another thread that changes the shared data state. The thread waiting on a signal will block with a call to <a href="https://linux.die.net/man/3/pthread_cond_wait"><code>pthread_cond_wait</code></a> or <a href="https://linux.die.net/man/3/pthread_cond_wait"><code>pthread_cond_timedwait</code></a>. The signalling thread would first modify the shared resource then signal or broadcast using <a href="https://linux.die.net/man/3/pthread_cond_signal"><code>pthread_cond_signal</code></a> or <a href="https://linux.die.net/man/3/pthread_cond_broadcast"><code>pthread_cond_broadcast</code></a> to threads waiting on the condition variable. The following sequence diagram shows how threads use a condition variable:</p>
+<figure>
+<img src="Lab2-condvar-sequence.svg" width="640" alt="" /><figcaption>Condition variable sequence with multiple threads</figcaption>
+</figure>
+<p>An example of spawning two threads with a mutex and condition variable:</p>
+<blockquote>
+<p><strong>NOTE</strong>: Return values should always be checked. This example does not check for errors.</p>
+</blockquote>
+<div class="sourceCode" id="cb11"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="pp">#define _POSIX_C_SOURCE 200809L</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="pp">#include </span><span class="im">&lt;unistd.h&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a><span class="pp">#include </span><span class="im">&lt;stdio.h&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true"></a><span class="pp">#include </span><span class="im">&lt;pthread.h&gt;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true"></a><span class="kw">typedef</span> <span class="kw">struct</span> Data</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true"></a>{</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true"></a>    pthread_mutex_t mutex;</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true"></a>    pthread_cond_t cond;</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true"></a>    <span class="dt">int</span> value;</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true"></a>} Data;</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true"></a><span class="dt">void</span> *my_thread_example_wait(<span class="dt">void</span> *opt)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true"></a>{</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true"></a>    Data *thread_data = (Data *)opt;</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true"></a>    pthread_mutex_lock(&amp;thread_data-&gt;mutex);</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true"></a>    <span class="cf">while</span> (thread_data-&gt;value != <span class="dv">2</span>)</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true"></a>    {</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true"></a>        printf(<span class="st">&quot;A: Waiting for condition %d == 2</span><span class="sc">\n</span><span class="st">&quot;</span>, thread_data-&gt;value);</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true"></a>        fflush(NULL);</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true"></a>        pthread_cond_wait(&amp;thread_data-&gt;cond, &amp;thread_data-&gt;mutex);</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true"></a>    }</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true"></a>    printf(<span class="st">&quot;A: Signal received. Data value is %d</span><span class="sc">\n</span><span class="st">&quot;</span>, thread_data-&gt;value);</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true"></a>    fflush(NULL);</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true"></a>    pthread_mutex_unlock(&amp;thread_data-&gt;mutex);</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true"></a></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true"></a>    <span class="cf">return</span> NULL;</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true"></a>}</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true"></a></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true"></a><span class="dt">void</span> *my_thread_example_signal(<span class="dt">void</span> *opt)</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true"></a>{</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true"></a>    Data *thread_data = (Data *)opt;</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true"></a></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true"></a>    pthread_mutex_lock(&amp;thread_data-&gt;mutex);</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true"></a>    printf(<span class="st">&quot;B: Modifying data from %d to 2</span><span class="sc">\n</span><span class="st">&quot;</span>, thread_data-&gt;value);</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true"></a>    fflush(NULL);</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true"></a>    thread_data-&gt;value = <span class="dv">2</span>;</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true"></a>    pthread_mutex_unlock(&amp;thread_data-&gt;mutex);</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true"></a>    printf(<span class="st">&quot;B: Signalling threads that value is now %d</span><span class="sc">\n</span><span class="st">&quot;</span>, thread_data-&gt;value);</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true"></a>    fflush(NULL);</span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true"></a>    pthread_cond_signal(&amp;thread_data-&gt;cond);</span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true"></a></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true"></a>    <span class="cf">return</span> NULL;</span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true"></a>}</span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true"></a></span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true"></a><span class="dt">int</span> main(<span class="dt">void</span>)</span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true"></a>{</span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true"></a>    Data my_data = {.value = <span class="dv">1</span>};</span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true"></a>    pthread_mutex_init(&amp;my_data.mutex, NULL);</span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true"></a>    pthread_cond_init(&amp;my_data.cond, NULL);</span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true"></a></span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true"></a>    pthread_attr_t pattr;</span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true"></a>    pthread_attr_init(&amp;pattr);</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true"></a></span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true"></a>    pthread_t id_a = <span class="dv">0</span>;</span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true"></a>    pthread_t id_b = <span class="dv">0</span>;</span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true"></a></span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true"></a>    pthread_create(&amp;id_a, &amp;pattr, my_thread_example_wait, &amp;my_data);</span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true"></a>    pthread_create(&amp;id_b, &amp;pattr, my_thread_example_signal, &amp;my_data);</span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true"></a></span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true"></a>    pthread_join(id_a, NULL);</span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true"></a>    pthread_join(id_b, NULL);</span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true"></a></span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true"></a>    <span class="cf">return</span> <span class="dv">0</span>;</span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true"></a>}</span></code></pre></div>
+<p>Output of the example is</p>
+<pre class="text"><code>A: Waiting for condition 1 == 2
+B: Modifying data from 1 to 2
+B: Signalling threads that value is now 2
+A: Signal received. Data value is 2</code></pre>
+<p>In this example the condition</p>
+<h3 id="best-practices">Best Practices</h3>
+<ul>
+<li>If using dynamic memory (so far, labs have not used any dynamic memory allocation):
+<ul>
+<li>Allocate all dynamic memory related to shared data before starting threads.</li>
+<li>Do not resize shared data during execution of threads.</li>
+<li>Initialize mutexes before thread creation and after memory allocations.</li>
+</ul></li>
+<li>Lock and unlock mutexes in the same scope and the same thread.</li>
+<li>Use condition variables for signalling to other threads that some data is ready to check or modify.</li>
+<li>Group data being shared between threads in a <code>struct</code> with associated mutexes and condition variables.</li>
+<li>Create and join all threads with common data from a single manager thread (often the main process).</li>
+<li>Avoid global variables. Pass data to threads from a manager (main) function instead.</li>
+<li>Lock mutexes for as short amount of time as possible. A good strategy is to only have mutex locked to copy data to a local variable so that other threads do not have to wait for the resource to become available.</li>
+<li>Don’t use multiple threads if it’s not necessary.</li>
+<li>Do not access or modify data concurrently by multiple threads if it’s not necessary.</li>
+</ul>
+<h3 id="coding-task-freshthreads-background">Coding Task: FreshThreads Background</h3>
+<p>Direct-to-consumer brands are thirsty to sell with large markups when demand is high but social media influencers can change a product’s appeal so fast, it’s hard to nail down a price! They decide to hire an embedded real-time systems software developer to help, for … reasons. It turns out the developer had not taken CST8703 and created a questionable simulation that used threads in a (quite possibly, most likely, definitely, horribly) wrong way. It’s your job to make the simulation great again and fix your predecessor’s mistakes. What’s worse, nobody could remember what they’re even selling anymore (not that it matters), so it’s a dubiously abstract problem with an abstract product. What we do know is the product is fresh and involves threads. What does it matter if you’re getting paid, anyways? (spoiler alert: you’re not actually going to be paid for this work).</p>
+<p>The rudimentary simulation consists of a pool of influencers on social media implemented using one thread per influencer acting on common shared data. Each influencer affects the “desirability factor” for a product which is simply a real number between 0.0 and 1.0. The change in the product’s desirability is governed by a random variable <span class="math inline">\(v\)</span> with a uniform distribution between a <span class="math inline">\(-\alpha\)</span> and <span class="math inline">\(\alpha\)</span>, where <span class="math inline">\(\alpha\)</span> is an adjustment factor between 0.0 and 0.5. If <span class="math inline">\(v_k\)</span> is positive after <span class="math inline">\(k\)</span> influencers have already promoted the product, the next influencer (<span class="math inline">\(k+1\)</span>) updates the latest desirability factor <span class="math inline">\(D_k\)</span> as follows:</p>
+<p><span class="math display">\[
+D_{k+1} = D_k + v_k (1.0 - D_k)
+\]</span></p>
+<p>If the factor <span class="math inline">\(v\)</span> is negative, the desirability is modified by:</p>
+<p><span class="math display">\[
+D_{k+1} = D_k(1.0 + v_k).
+\]</span></p>
+<p>There is a pool of <span class="math inline">\(N\)</span> influencers. The simulation checks what price the product can be set to based on the desirability after <span class="math inline">\(M\)</span> influencers showcase the product. The cost is set between a minimum value <span class="math inline">\(C_{min}\)</span> and maximum value <span class="math inline">\(C_{max}\)</span> scaled by the current desirability. The simulation is set up with the following initial values:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(N\)</span></td>
+<td>1000</td>
+<td>Number of influencers (threads in pool)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(M\)</span></td>
+<td>50</td>
+<td>Number of influencer promotions before cost appraisal</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(D_0\)</span></td>
+<td>0.5</td>
+<td>Initial desirability factor</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(C_{min}\)</span></td>
+<td>$20</td>
+<td>Minimum cost</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(C_{max}\)</span></td>
+<td>$500</td>
+<td>Maximum cost</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\alpha\)</span></td>
+<td>0.2</td>
+<td>Desirability change factor</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(s\)</span></td>
+<td>1234</td>
+<td>Integer chosen as initial seed to the random number generator</td>
+</tr>
+</tbody>
+</table>
+<p>Your task is to run the simulation and identify the problem, then implement safe thread syncronizaiton with Mutexes and Condition Variables. Follow the methods below.</p>
 <h2 id="materials">Materials</h2>
+<ol type="1">
+<li><p>Raspberry Pi connected to local network.</p></li>
+<li><p>Desktop or laptop computer with Linux, Windows, or Mac operating system.</p></li>
+<li><p>Wired or wireless local network.</p></li>
+</ol>
 <h2 id="methods">Methods</h2>
-<h2 id="deliverables">Deliverables</h2>
-<p>Run</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ex">./scripts/run_submission.sh</span></span></code></pre></div>
-<p>Expected contents out output.txt:</p>
-<pre class="text"><code></code></pre>
-<h2 id="references">References</h2>                    
+<h3 id="prerequisites">Prerequisites</h3>
+<p>Clone source from GitHub repository <a href="https://github.com/chishok/CST8703-Lab2">https://github.com/chishok/CST8703-Lab2</a>.</p>
+<h3 id="coding-task-make-freshthreads-thread-safe">Coding Task: Make FreshThreads Thread-Safe</h3>
+<p>Without modifying the original source, build and run the target <code>FreshThreads</code> using the script command</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="ex">./scripts/run_submission.sh</span></span></code></pre></div>
+<p>The program FreshThreads should build, run and generate a figure at the path <code>data/desirabilityLog.png</code>. An example of an output plot is</p>
+<figure>
+<img src="Lab2-desirabilityLog-nomutex.png" width="640" alt="" /><figcaption>FreshThreads simulation plot result without safe thread synchronization</figcaption>
+</figure>
+<p>The plot shows the progression of the desirability factor after every influencer mention of the product. The algorithm was intended to provide a random walk around a desirability of 0.5 but there is clearly a problem with the result.</p>
+<p>Alter the target program <code>FreshThreads</code> to safely access data from multiple threads. Make your modifications between all section with the comments</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a>    <span class="co">/*</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true"></a><span class="co">     * STUDENT WORK SECTION </span><span class="re">BEGIN</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true"></a><span class="co">     * ==========================</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true"></a><span class="co">     */</span></span></code></pre></div>
+<p>and</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a>    <span class="co">/*</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a><span class="co">     * ========================</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a><span class="co">     * STUDENT WORK SECTION </span><span class="re">END</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true"></a><span class="co">     */</span></span></code></pre></div>
+<p>The comments provide explicit instructions that must be followed to render the program thread-safe. There are multiple source files in this example and the majority of the work is required in the file <code>src/ac_fresh.c</code>.</p>
+<p>Once you’ve made the changes to the source code, run</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="ex">./scripts/run_submission.sh</span></span></code></pre></div>
+<p>The expected contents of <code>data/output.txt</code>:</p>
+<pre class="text"><code>Arguments parsed
+  filename: data/dataLog.dat
+Thread info:
+    thread name: CST8703Lab2-Fre
+    thread policy: SCHED_OTHER
+    thread priority: 0
+    thread id: 140124116076288
+    process id: 13902
+    timestamp: 2022-06-13 23:28:24
+Fresh Threads Social Marketplace
+================================
+Inputs:
+    influencer change factor: 0.20
+    number of influencers: 1000
+    minimum cost: $20.00
+    maximum cost: $500.00
+Appraisal Results:
+    latest desirability: 0.589209
+    latest cost: $302.82
+    appraisal after 50 influencer mentions:
+        desirability 0.748357
+        cost $379.21</code></pre>
+<p>The expected output plot at <code>data/desirabilityLog.png</code>:</p>
+<figure>
+<img src="Lab2-desirabilityLog-expected.png" width="640" alt="" /><figcaption>FreshThreads simulation expected output plot result</figcaption>
+</figure>
+<h2 id="analysis">Analysis</h2>
+<ol type="1">
+<li><p>Compare the output desirability factor plots before and after the mutexes and condition variables were implemented.</p>
+<ol type="1">
+<li>What was the issue when there was no thread synchronization?</li>
+<li>Why did the values drop to zero so frequently?</li>
+<li>How did adding mutexes solve the problem?</li>
+</ol></li>
+<li><p>Evaluate modifications to the simulation parameters.</p>
+<ol type="1">
+<li>In the <code>src/main.c</code> file line 34, rebuild and run with a different seed value. How does the output plot change when a new seed is provided to the pseudo random number generator?</li>
+<li>When the program is re-run multiple times with the same seed, does the output change? Are different random numbers generated for each run? Why?</li>
+<li>If the influencer change factor is modified in file <code>src/main.c</code> file line 36 to 0.5 and then again for 0.05. What changes do you see in the output desirability plot?</li>
+</ol></li>
+<li><p>Reset seed and change factors to original values:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a>data.influencer.rng_seed = <span class="dv">1234</span>;</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true"></a>data.config.influencer_change_factor = <span class="fl">0.05</span>;</span></code></pre></div></li>
+<li><p>Comment on the effectiveness and validity of the simulation:</p>
+<ol type="1">
+<li>Could this simulation be run on a single thread in a simple for loop?</li>
+<li>If you were to design the simulation from the ground up, would you recommend using multiple threads? Why or why not?</li>
+<li>What is meant by a pseudo-random number generator? Is it valid to use random number generators when simulating real-world dynamic systems?</li>
+<li>Speculate how one might validate the results of the simulation with real-world data.</li>
+</ol></li>
+</ol>
+<p>You’ve completed your contract with the social media brand representative. Their marketing team is so impressed with your work that they promote it on an influential blog site and across social media platforms. The piece gets picked up Ars Technica, and they reach out for an interview. What do you really think about your work on this project? Do you tell the reporter that the algorithm was flawed from the beginning or do you promote your burgeoning career as a social media marketing and predictions specialist?</p>
+<h2 id="submission">Submission</h2>
+<p>Include your modified source code and a lab report. If you forked the repo on your personal GitHub, commit and push your changes, then download your repo as a zip file. If you do not use GitHub, compress the source code in a zip file or tar file. Be sure that the command <code>./scripts/run_submission.sh</code> produces the expected output.</p>                    
                 </div>
             </div>
 
