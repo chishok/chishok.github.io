@@ -247,6 +247,7 @@
 <span id="cb8-34"><a href="#cb8-34" aria-hidden="true"></a></span>
 <span id="cb8-35"><a href="#cb8-35" aria-hidden="true"></a>    <span class="cf">return</span> <span class="dv">0</span>;</span>
 <span id="cb8-36"><a href="#cb8-36" aria-hidden="true"></a>}</span></code></pre></div>
+<p>You can build and run this target from the source code: <code>CST8703Lab2-ExampleThread</code>.</p>
 <p>In this example, the shared data has a value initialized to <code>1</code> and appears to be modified after creating the first thread, but it will in fact be set to <code>2</code> before printing “Data value is 2” twice. In order to properly control how and when data is read or written by multiple threads, mutexes and condition variables described in the following sections are required.</p>
 <h3 id="mutexes">Mutexes</h3>
 <p>Mutexes can be used to manage concurrent access to data from multiple threads. A mutex is first locked by a thread that wishes to have exclusive access to shared resources. The thread will then operate on the shared data and once operations are complete, the mutex is unlocked and other threads can in turn lock it. POSIX mutexes have the type <code>pthread_mutex_t</code>, are initialized with the function <a href="https://man7.org/linux/man-pages/man3/pthread_mutex_init.3p.html"><code>pthread_mutex_init</code></a> and can be locked and unlocked with the functions <a href="https://man7.org/linux/man-pages/man3/pthread_mutex_lock.3p.html"><code>pthread_mutex_lock</code></a> and <a href="https://man7.org/linux/man-pages/man3/pthread_mutex_unlock.3p.html"><code>pthread_mutex_unlock</code></a>. Refer to the man pages for each of these functions for more information. The following sequence diagram shows how threads use a mutex:</p>
@@ -255,7 +256,7 @@
 </figure>
 <p>Mutexes can cause issues when multiple resources are being locked and accessed by multiple threads. A classic example is deadlock when it becomes impossible for multiple threads to proceed because they are waiting to lock mutexes which will never be unlocked. The following sequence diagram shows how a deadlock can occur:</p>
 <figure>
-<img src="Lab2-mutex-sequence.svg" width="640" alt="" /><figcaption>Mutex deadlock</figcaption>
+<img src="Lab2-mutex-deadlock.svg" width="640" alt="" /><figcaption>Mutex deadlock</figcaption>
 </figure>
 <p>A lock may be held for too long and a critical deadline can be exceeded in a real-time application such as a controller with a periodic task. In order to guard against excessive blocking durations and prevent tasks from exceeding their deadlines, a timeout can be used on blocking calls to lock a mutex. With POSIX, the function <a href="https://man7.org/linux/man-pages/man3/pthread_mutex_timedlock.3p.html"><code>pthread_mutex_timedlock</code></a> uses a timeout.</p>
 <blockquote>
@@ -311,6 +312,7 @@
 <p>Output of the example is</p>
 <pre class="text"><code>Data value is 2
 Data value is 3</code></pre>
+<p>You can build and run this target from the source code: <code>CST8703Lab2-ExampleMutex</code>.</p>
 <p>In the thread function <code>my_thread_example</code>, the data is only modified and printed between mutex lock and unlock commands. This prevents the second thread from modifying the data at the same time.</p>
 <h3 id="condition-variables">Condition Variables</h3>
 <p>A condition variable is used to signal to other threads when shared data is modified and ready to check. A mutex is still necessary to prevent threads from accessing the same data but one or more threads can wait on a condition variable to be notified about changes in a shared state. The notification comes from another thread that changes the shared data state. The thread waiting on a signal will block with a call to <a href="https://linux.die.net/man/3/pthread_cond_wait"><code>pthread_cond_wait</code></a> or <a href="https://linux.die.net/man/3/pthread_cond_wait"><code>pthread_cond_timedwait</code></a>. The signalling thread would first modify the shared resource then signal or broadcast using <a href="https://linux.die.net/man/3/pthread_cond_signal"><code>pthread_cond_signal</code></a> or <a href="https://linux.die.net/man/3/pthread_cond_broadcast"><code>pthread_cond_broadcast</code></a> to threads waiting on the condition variable. The following sequence diagram shows how threads use a condition variable:</p>
@@ -392,7 +394,8 @@ Data value is 3</code></pre>
 B: Modifying data from 1 to 2
 B: Signalling threads that value is now 2
 A: Signal received. Data value is 2</code></pre>
-<p>In this example the condition</p>
+<p>You can build and run this target from the source code: <code>CST8703Lab2-ExampleCondvar</code>.</p>
+<p>In this example the thread A waits for a condition to be met and thread B modifies the data and signals A to check it.</p>
 <h3 id="best-practices">Best Practices</h3>
 <ul>
 <li>If using dynamic memory (so far, labs have not used any dynamic memory allocation):
@@ -550,7 +553,7 @@ Appraisal Results:
 <li>Speculate how one might validate the results of the simulation with real-world data.</li>
 </ol></li>
 </ol>
-<p>You’ve completed your contract with the social media brand representative. Their marketing team is so impressed with your work that they promote it on an influential blog site and across social media platforms. The piece gets picked up Ars Technica, and they reach out for an interview. What do you really think about your work on this project? Do you tell the reporter that the algorithm was flawed from the beginning or do you promote your burgeoning career as a social media marketing and predictions specialist?</p>
+<p>You’ve completed your contract with the social media brand representative. Their marketing team is so impressed with your work that they promote it on an influential blog site and across social media platforms. The piece gets picked up by Ars Technica, and they reach out for an interview. What do you really think about your work on this project? Do you tell the reporter that the algorithm was flawed from the beginning or do you promote your burgeoning career as a social media marketing and predictions specialist?</p>
 <h2 id="submission">Submission</h2>
 <p>Include your modified source code and a lab report. If you forked the repo on your personal GitHub, commit and push your changes, then download your repo as a zip file. If you do not use GitHub, compress the source code in a zip file or tar file. Be sure that the command <code>./scripts/run_submission.sh</code> produces the expected output.</p>                    
                 </div>
