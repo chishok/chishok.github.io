@@ -6,102 +6,535 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <meta name="author" content="Kyle Chisholm" />
   <meta name="dcterms.date" content="2022-05-01" />
-  <title>CST 8703 Lab 3 - Timing Diagrams and Worst Case Analysis</title>
-  <style>
-    code{white-space: pre-wrap;}
-    span.smallcaps{font-variant: small-caps;}
-    span.underline{text-decoration: underline;}
-    div.column{display: inline-block; vertical-align: top; width: 50%;}
-    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
-    pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-    pre > code.sourceCode > span:empty { height: 1.2em; }
-    code.sourceCode > span { color: inherit; text-decoration: inherit; }
-    div.sourceCode { margin: 1em 0; }
-    pre.sourceCode { margin: 0; }
-    @media screen {
-    div.sourceCode { overflow: auto; }
-    }
-    @media print {
-    pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-    }
-    pre.numberSource code
-      { counter-reset: source-line 0; }
-    pre.numberSource code > span
-      { position: relative; left: -4em; counter-increment: source-line; }
-    pre.numberSource code > span > a:first-child::before
-      { content: counter(source-line);
-        position: relative; left: -1em; text-align: right; vertical-align: baseline;
-        border: none; display: inline-block;
-        -webkit-touch-callout: none; -webkit-user-select: none;
-        -khtml-user-select: none; -moz-user-select: none;
-        -ms-user-select: none; user-select: none;
-        padding: 0 4px; width: 4em;
-        color: #aaaaaa;
-      }
-    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-    div.sourceCode
-      {  background-color: #f8f8f8; }
-    @media screen {
-    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-    }
-    code span.al { color: #ef2929; } /* Alert */
-    code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
-    code span.at { color: #c4a000; } /* Attribute */
-    code span.bn { color: #0000cf; } /* BaseN */
-    code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
-    code span.ch { color: #4e9a06; } /* Char */
-    code span.cn { color: #000000; } /* Constant */
-    code span.co { color: #8f5902; font-style: italic; } /* Comment */
-    code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
-    code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
-    code span.dt { color: #204a87; } /* DataType */
-    code span.dv { color: #0000cf; } /* DecVal */
-    code span.er { color: #a40000; font-weight: bold; } /* Error */
-    code span.ex { } /* Extension */
-    code span.fl { color: #0000cf; } /* Float */
-    code span.fu { color: #000000; } /* Function */
-    code span.im { } /* Import */
-    code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
-    code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
-    code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
-    code span.ot { color: #8f5902; } /* Other */
-    code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
-    code span.sc { color: #000000; } /* SpecialChar */
-    code span.ss { color: #4e9a06; } /* SpecialString */
-    code span.st { color: #4e9a06; } /* String */
-    code span.va { color: #000000; } /* Variable */
-    code span.vs { color: #4e9a06; } /* VerbatimString */
-    code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+  <title>CST 8703 Lab 3 - Timing Diagrams and Scheduling Feasibility</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS_CHTML" type="text/javascript"></script>
 </head>
 <body>
 <header id="title-block-header">
-<h1 class="title">CST 8703 Lab 3 - Timing Diagrams and Worst Case Analysis</h1>
+<h1 class="title">CST 8703 Lab 3 - Timing Diagrams and Scheduling Feasibility</h1>
 <p class="author">Kyle Chisholm</p>
 <p class="date">2022-05-01</p>
 </header>
 <p>Real-Time Systems and Embedded Programming</p>
-<p><strong>Submission Deadline</strong>: May 01, 2022</p>
-<p>Feasibility and worst case scenarios for a simulated workload are analyzed with programs running on the pi and verified with Cheddar, a real-time schedulability tool.</p>
+<p>Feasibility and worst case scenarios for a simulated workload are analyzed with programs running on the pi and verified with Cheddar, a real-time scheduling analysis tool.</p>
+<p>Source code available at <a href="https://github.com/chishok/CST8703-Lab3">https://github.com/chishok/CST8703-Lab3</a>.</p>
+<p><strong>Submission Deadline</strong>: July 3, 2022</p>
 <h2 id="background">Background</h2>
-<p>Equation of a line [<span class="citation" data-cites="Kerrisk2010"><a href="#ref-Kerrisk2010" role="doc-biblioref">1</a></span>]: <span class="math display">\[ y = mx +b \]</span></p>
-<!-- $$ y = mx +b $$ {#eq:description}
-The equation @eq:description refers to a line \[@Kerrisk2010\]. -->
+<p>When designing a real-time system, modeling and analysis tools can be used to determine the feasibility of meeting all required deadlines. For control systems, there are often multiple periodic tasks each with a deadline, worst-case execution time, and priority. The ability to execute every task before their deadlines expire depend on the strategy employed by the system to schedule when to provide cpu resources for each task (thread).</p>
+<p>Feasibility analyses for periodic tasks have the following assumptions (as expressed by <span class="citation" data-cites="Buttazzo2011">[<a href="#ref-Buttazzo2011">1</a>]</span>):</p>
+<ul>
+<li>The instances of a periodic task <span class="math inline">\(\tau_i\)</span> are regularly activated at a constant rate. The interval <span class="math inline">\(T_i\)</span> between two consecutive activations is the period of the task.</li>
+<li>All instances of a periodic task <span class="math inline">\(\tau_i\)</span> have the same worst-case execution time <span class="math inline">\(C_i\)</span>.</li>
+<li>All instances of a periodic task <span class="math inline">\(\tau_i\)</span> have the same relative deadline <span class="math inline">\(D_i\)</span> which is equal to the period <span class="math inline">\(T_i\)</span> .</li>
+<li>All tasks in a system in a set of tasks <span class="math inline">\(\Gamma\)</span> are independent; that is, there are no precedence relations and no resource constraints.</li>
+<li>No task can suspend itself, for example on I/O operations.</li>
+<li>All tasks are released as soon as they arrive.</li>
+<li>All overheads in the kernel are assumed to be zero.</li>
+</ul>
+<p>In real-world applications, all the assumptions cannot be realistically satisfied and attempting to enforce a rigid timing schedule can be problematic. In practice, safety margins should be put in place when designing and modeling the real-time system. Additionally, a real-time feasibility analysis complements a broader and more rigorous testing strategy including <a href="https://www.perfecto.io/resources/types-of-testing">unit testing, functional testing, benchmarking, profiling, integration testing, life testing, regression testing</a>, etc.</p>
+<p>A simple preemptive scheduling algorithm for periodic tasks is called <strong>Rate Monotonic</strong> which assigns priorities <span class="math inline">\(P_i\)</span> to each task <span class="math inline">\(\tau_i\)</span> in a task set <span class="math inline">\(\Gamma = \{ \tau_1, \tau_2, \dots, \tau_n \}\)</span> such that tasks are ordered by increasing periods and decreasing priority. The first task <span class="math inline">\(\tau_1\)</span> will have the highest priority and shortest period, and the last task <span class="math inline">\(\tau_n\)</span> has the lowest priority and longest period.</p>
+<p>There are several methods of determining the feasibility of a set of periodic tasks with fixed period and worst-case execution times. A conservative approach for rate monotonic scheduling is to check whether the total utilization factor <span class="math inline">\(U\)</span> is less than the “lower upper bound” (See <span class="citation" data-cites="Buttazzo2011">[<a href="#ref-Buttazzo2011">1</a>]</span>, Chapter 4.3.3). The total utilization factor for <span class="math inline">\(n\)</span> tasks is calculated as</p>
+<p><span class="math display">\[
+U = \sum_{i=1}^n \frac{C_i}{T_i},
+\]</span></p>
+<p>which indicates that a factor greater than 1.0 is not feasible for any algorithm since it will consume more execution time than is available in all time periods. However, a value less than 1.0 may or may not be feasible. Any utilization factor <span class="math inline">\(U\)</span> less than the least upper bound utilization factor <span class="math inline">\(U_{lub}\)</span> is guaranteed to be feasible for a task set. The least upper bound utilization factor (derived in <span class="citation" data-cites="Buttazzo2011">[<a href="#ref-Buttazzo2011">1</a>]</span> Chapter 4.3.3) is</p>
+<p><span class="math display">\[
+U_{lub} = n(2^{1/n} - 1).
+\]</span></p>
+<p>For factors in the range <span class="math inline">\(U_{lub} &lt; U \leq 1.0\)</span> feasibility is still uncertain. The following figure illustrates the concept of least upper bound and feasiblity of various task sets:</p>
+<figure>
+<img src="least_upper_bound.png" alt="Relationship of feasibility to least upper bound of processor utilization factor." width="640" /><figcaption>Relationship of feasibility to least upper bound of processor utilization factor.</figcaption>
+</figure>
+<p>A less conservative least upper bound for rate monotonic scheduling is the hyperbolic bound where the task set is feasible under the following condition:</p>
+<p><span class="math display">\[
+\prod_{i = 1}^{n} (U_i + 1) &lt; 2.
+\]</span></p>
+<p>If the least upper bound and hyperbolic bound functions are not sufficient to determine feasibility, a deadline monotonic schedule (See <span class="citation" data-cites="Buttazzo2011">[<a href="#ref-Buttazzo2011">1</a>]</span> Chapter 4.5) algorithm can be employed called “response time analysis” (Figure <a href="#fig:dmresponsetime">1</a>). Deadline monotonic is an extension of rate monotonic and they are equivalent if the deadline <span class="math inline">\(D\)</span> is equal to the period <span class="math inline">\(T\)</span> for each task <span class="math inline">\(i\)</span>, such that <span class="math inline">\(D_i = T_i\)</span>. Figure <a href="#fig:dmresponsetime">1</a> provides the response time analysis algorithm. The “response time analysis” algorithm provides an exact solution to the feasibility problem but is less efficient computationally compared to the above metrics.</p>
+<div id="fig:dmresponsetime" class="fignos">
+<figure>
+<img src="dm_response_time_analysis.png" alt="Figure 1: Response time analysis algorithm ([1] Figure 4.17)." /><figcaption><span>Figure 1:</span> Response time analysis algorithm (<span class="citation" data-cites="Buttazzo2011">[<a href="#ref-Buttazzo2011">1</a>]</span> Figure 4.17).</figcaption>
+</figure>
+</div>
+<p>Putting it all together, Figure <a href="#fig:rmflow">2</a> provides a flowchart for determining rate monotonic feasibility of a task set.</p>
+<div id="fig:rmflow" class="fignos">
+<figure>
+<img src="rm_feasibility_flowchart.svg" alt="Figure 2: Rate monotonic feasibility analysis flowchart." /><figcaption><span>Figure 2:</span> Rate monotonic feasibility analysis flowchart.</figcaption>
+</figure>
+</div>
 <h2 id="materials">Materials</h2>
+<ol type="1">
+<li><p><a href="https://www.raspberrypi.com/products/raspberry-pi-4-model-b/">Raspberry Pi 4</a>.</p></li>
+<li><p>Desktop computer with Linux, Windows, or Mac operating system.</p></li>
+<li><p>Wired or wireless local network.</p></li>
+</ol>
 <h2 id="methods">Methods</h2>
-<h2 id="deliverables">Deliverables</h2>
-<p>Run</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ex">./scripts/run_submission.sh</span></span></code></pre></div>
-<p>Expected contents out output.txt:</p>
-<pre class="text"><code></code></pre>
-<h2 class="unnumbered" id="references">References</h2>
-<div id="refs" class="references" role="doc-bibliography">
-<div id="ref-Kerrisk2010">
-<p>[1] M. Kerrisk, <em>The linux programming interface : A linux and unix system programming handbook</em>. No Starch Press, 2010.</p>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>Clone source from GitHub repository <a href="https://github.com/chishok/CST8703-Lab3">https://github.com/chishok/CST8703-Lab3</a>.</p>
+<p>Install Cheddar on <strong>Windows</strong>:</p>
+<ol type="1">
+<li><a href="http://beru.univ-brest.fr/cheddar/#RefDownloadRelease">Download latest Windows zip file here</a></li>
+<li>Extract zip file and run <code>cheddar.exe</code></li>
+</ol>
+<p>Or install on <strong>Ubuntu</strong>:</p>
+<ol type="1">
+<li><p>Run the script</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="ex">./scripts/install_cheddar.bash</span></a></code></pre></div></li>
+<li><p>Run Cheddar</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="ex">run-cheddar</span></a></code></pre></div></li>
+</ol>
+<h3 id="sec:cheddar">Cheddar - A Real-Time Scheduling Simulator</h3>
+<p>A simple example of a system scheduling will be analyzed using Cheddar. The following instructions only provide minimal information to run a scheduling analysis. For more details regarding the Cheddar application, follow the <a href="http://beru.univ-brest.fr/cheddar/contribs/educational/ubo/ETR-2015-2017-2021/tp-gb.html">online tutorial steps</a> which were used to develop the following procedures. We wish to determine the scheduling of a system of periodic tasks with these timing characteristics:</p>
+<div id="tbl:cheddar-example" class="tablenos">
+<table>
+<caption><span>Table 1:</span> Cheddar Example Task Set </caption>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(i\)</span></th>
+<th><span class="math inline">\(C_i\)</span></th>
+<th><span class="math inline">\(T_i\)</span></th>
+<th><span class="math inline">\(p_i\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>2</td>
+<td>6</td>
+<td>100</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>2</td>
+<td>9</td>
+<td>99</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>3</td>
+<td>12</td>
+<td>98</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>This system will be scheduled as rate monotonic (RM) where priority is higher for shorter interval durations <span class="math inline">\(T_i\)</span>. Recall the symbol definitions:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Symbol</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\tau_i\)</span></td>
+<td>Task</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(C_i\)</span></td>
+<td>Worst-case execution time (WCET)</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(T_i\)</span></td>
+<td>Interval deadline (period)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(p_i\)</span></td>
+<td>Priority</td>
+</tr>
+</tbody>
+</table>
+<p>Perform the following steps to analyze the set of tasks:</p>
+<ol type="1">
+<li><p>The main cheddar window.</p>
+<figure>
+<img src="Lab3-cheddar-1.png" alt="Cheddar new window" /><figcaption>Cheddar new window</figcaption>
+</figure></li>
+<li><p><strong>Add a <code>Core</code> component</strong></p>
+<figure>
+<img src="Lab3-cheddar-2.png" alt="Cheddar Core window" /><figcaption>Cheddar Core window</figcaption>
+</figure>
+<ol type="1">
+<li>From the menu select <code>Edit -&gt; Hardware -&gt; Core</code>.</li>
+<li>Fill out the <code>Name</code> as <code>core1</code>, select <code>Scheduler type</code> as <code>Rate Monotonic Protocol</code>, and <code>Preemptive type</code> as <code>Preemptive</code>.</li>
+<li>Press the <code>Add</code> button.</li>
+<li>Close the <code>Core</code> window.</li>
+</ol></li>
+<li><p><strong>Define a <code>Processor</code> component</strong></p>
+<figure>
+<img src="Lab3-cheddar-3.png" alt="Cheddar Processor window" /><figcaption>Cheddar Processor window</figcaption>
+</figure>
+<ol type="1">
+<li>From the menu select <code>Edit -&gt; Hardware -&gt; Processor</code>.</li>
+<li>Fill out the <code>Name</code> as <code>cpu</code>.</li>
+<li>In the <code>Cores Table</code> section set <code>Core Name</code> to <code>core1</code> and click on the core <code>Add</code> button just below. Press the <code>Add</code> button at the bottom row.</li>
+<li>Close the Processor window.</li>
+</ol></li>
+<li><p><strong>Define a software <code>Address Space</code></strong></p>
+<figure>
+<img src="Lab3-cheddar-4.png" alt="Cheddar Address Space window" /><figcaption>Cheddar Address Space window</figcaption>
+</figure>
+<ol type="1">
+<li>From the menu select <code>Edit -&gt; Software -&gt; Address Space</code>.</li>
+<li>Fill out the <code>Name</code> as <code>addr</code>.</li>
+<li>Set <code>Processor Name</code> to <code>cpu</code> and click on the <code>Add</code> button.</li>
+<li>Close the Address Space window.</li>
+</ol></li>
+<li><p><strong>Add software <code>Task</code></strong></p>
+<div id="fig:cheddar-task" class="fignos">
+<figure>
+<img src="Lab3-cheddar-5.png" alt="Figure 3: Cheddar task window" /><figcaption><span>Figure 3:</span> Cheddar task window</figcaption>
+</figure>
+</div>
+<ol type="1">
+<li>From the menu select <code>Edit -&gt; Software -&gt; Task</code>.</li>
+<li>Fill out the <code>Name</code> as <code>task1</code>.</li>
+<li>Set <code>Task Type</code> to <code>Periodic</code>, <code>Processor Name</code> to <code>cpu</code>, <code>Address Space Name</code> to <code>addr</code>, and <code>Policy</code> to <code>Sched Fifo</code>.</li>
+<li>From Table <a href="#tbl:cheddar-example">1</a> above:
+<ol type="1">
+<li>Set the <code>Capacity</code> to the task 1 worst-case execution time (<span class="math inline">\(C_1 = 2\)</span> from table).</li>
+<li>Set the <code>Period</code> and <code>Deadline</code> to the period <span class="math inline">\(T_1 = 6\)</span>.</li>
+<li>Set the <code>Priority</code> to <span class="math inline">\(p_i = 100\)</span>.</li>
+<li>Click on the <code>Add</code> button.</li>
+</ol></li>
+<li>Repeat previous step for tasks 2 and 3 with names <code>task2</code> and <code>task3</code> and corresponding WCET, period, and priorities from Table <a href="#tbl:cheddar-example">1</a>.</li>
+<li>The task list should appear like the Cheddar task window screenshot in Figure <a href="#fig:cheddar-task">3</a></li>
+</ol></li>
+</ol>
+<p>The model is now ready to run. Press the gears button to check if the model is feasible. A series of feasibility test are performed. In this case, two tests are run to verify that the task set is feasible with rate monotonic scheduling. For references, click on the menu <code>Help -&gt; Scheduling References</code>. The feasibility result will be verified with our own implementation in the next section of this lab.</p>
+<p>Depending on the scheduling policy and algorithm chosen, it may not be possible to determine feasibility without running a simulation. To run a simulation, press the <code>Play</code> button. Accept the default duration. The following figure shows the result of the feasibility tests and simulation with each task processing times and deadlines displayed until the entire sequence repeats:</p>
+<figure>
+<img src="Lab3-cheddar-6.png" alt="Cheddar Scheduling Analysis Result." width="640" /><figcaption>Cheddar Scheduling Analysis Result.</figcaption>
+</figure>
+<p>The simulation duration is called the hyperperiod. If no deadline is missed in the simulation, the task set is schedulable.</p>
+<h3 id="coding-task-compare-rate-monotonic-feasibility-with-cheddar-simulation">Coding Task: Compare Rate Monotonic Feasibility With Cheddar Simulation</h3>
+<p>The feasibility test flowchart (Figure <a href="#fig:rmflow">2</a>) will be implemented in code to determine the feasibility of scheduling a rate monotonic (RM) task set. We will run our feasibility tests and compare them with Cheddar.</p>
+<p>In the file <code>FeasibleWorkload/src/main.c</code>, the first two task set examples are defined:</p>
+<table>
+<caption>Task Set ex0</caption>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(i\)</span></th>
+<th><span class="math inline">\(C_i\)</span></th>
+<th><span class="math inline">\(T_i\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>2</td>
+<td>6</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>2</td>
+<td>9</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>3</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Task Set ex1</caption>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(i\)</span></th>
+<th><span class="math inline">\(C_i\)</span></th>
+<th><span class="math inline">\(T_i\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>2</td>
+<td>6</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>2</td>
+<td>9</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>3</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>NOTE</strong>: Several task sets from this lab are from examples and exercises in <span class="citation" data-cites="Buttazzo2011">[<a href="#ref-Buttazzo2011">1</a>]</span> and may be used as a resource to verify the implementation (but is not required).</p>
+</blockquote>
+<p>The priorities are not needed since these are assumed to be rate-monotonic (descending priority with ascending period). When the program <code>FeasibleWorkload</code> is run, the output provide the incorrect utilization factor and the tests are incorrectly identified as not feasible.</p>
+<p>In order to fix the feasibility tests modify the file <code>FeasibleWorkload/src/ac_feasibility.c</code> between the comments</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb3-1" title="1">    <span class="co">/*</span></a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="co">     * STUDENT WORK SECTION </span><span class="re">BEGIN</span></a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="co">     * ==========================</span></a>
+<a class="sourceLine" id="cb3-4" title="4"><span class="co">     */</span></a></code></pre></div>
+<p>and</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb4-1" title="1">    <span class="co">/*</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="co">     * ========================</span></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="co">     * STUDENT WORK SECTION </span><span class="re">END</span></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="co">     */</span></a></code></pre></div>
+<p>Follow the instruction in the source carefully. Test the program by running and debugging <code>FeasibleWorkload</code>. Verify the output to look like this:</p>
+<pre class="text"><code>ex0:
+  0:(C=1,T=2)  1:(C=1,T=10)  2:(C=2,T=15)
+  Utilization factor U = 0.7333
+  Least upper bound U_lub = 0.7798
+  Feasible (U less than 1.0): Maybe
+  Feasible (RM LUB): Yes
+  Feasible (RM hyperbolic): Yes
+  Feasible (DM response time): Yes
+
+ex1:
+  0:(C=3,T=5)  1:(C=1,T=8)  2:(C=1,T=10)
+  Utilization factor U = 0.8250
+  Least upper bound U_lub = 0.7798
+  Feasible (U less than 1.0): Maybe
+  Feasible (RM LUB): Maybe
+  Feasible (RM hyperbolic): Yes
+  Feasible (DM response time): Yes</code></pre>
+<blockquote>
+<p><strong>NOTE</strong>: In the function <code>ac_feasibility_dm_response_time</code> in <code>FeasibleWorkload/src/ac_feasibility.c</code>, a bonus task is to implement the algorithm from Figure <a href="#fig:dmresponsetime">1</a>. A solution to this function will be presented in class as scheduled. You may attempt the function implementation before the solution is provided to obtain the bonus marks.</p>
+</blockquote>
+<p>Now that the feasibility test is implemented correctly, modify <code>FeasibleWorkload/src/main.c</code> by adding the following task sets:</p>
+<table>
+<caption>Task Set ex2</caption>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(i\)</span></th>
+<th><span class="math inline">\(C_i\)</span></th>
+<th><span class="math inline">\(T_i\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>1</td>
+<td>5</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>1</td>
+<td>7</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>2</td>
+<td>13</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Task Set ex3</caption>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(i\)</span></th>
+<th><span class="math inline">\(C_i\)</span></th>
+<th><span class="math inline">\(T_i\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>2</td>
+<td>6</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>3</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Task Set ex4</caption>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(i\)</span></th>
+<th><span class="math inline">\(C_i\)</span></th>
+<th><span class="math inline">\(T_i\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>4</td>
+<td>16</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Task Set ex5</caption>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(i\)</span></th>
+<th><span class="math inline">\(C_i\)</span></th>
+<th><span class="math inline">\(T_i\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>2</td>
+<td>6</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>3</td>
+<td>8</td>
+</tr>
+</tbody>
+</table>
+<p>Modify the Cheddar model in Section <a href="#sec:cheddar">0.3.2</a> with the task sets ex2, ex3, ex4, and ex5 above. Evaluate the feasiblity, run the simulation, and take a screenshot of the result for each task set.</p>
+<p>Check your work by running:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1"><span class="ex">./scripts/run_submission.sh</span></a></code></pre></div>
+<p>Expected contents of output.txt (some output hidden):</p>
+<pre class="text"><code>ex0:
+  0:(C=1,T=2)  1:(C=1,T=10)  2:(C=2,T=15)
+  Utilization factor U = 0.7333
+  Least upper bound U_lub = 0.7798
+  Feasible (U less than 1.0): Maybe
+  Feasible (RM LUB): Yes
+  Feasible (RM hyperbolic): Yes
+  Feasible (DM response time): Yes
+
+ex1:
+  0:(C=3,T=5)  1:(C=1,T=8)  2:(C=1,T=10)
+  Utilization factor U = 0.8250
+  Least upper bound U_lub = 0.7798
+  Feasible (U less than 1.0): Maybe
+  Feasible (RM LUB): Maybe
+  Feasible (RM hyperbolic): Yes
+  Feasible (DM response time): Yes
+
+ex2:
+  0:(C=1,T=2)  1:(C=1,T=5)  2:(C=1,T=7)  3:(C=2,T=13)
+  ...
+  Feasible (DM response time): No
+
+ex3:
+  0:(C=1,T=4)  1:(C=2,T=6)  2:(C=3,T=10)
+  ...
+  Feasible (DM response time): Yes
+
+ex4:
+  0:(C=1,T=2)  1:(C=1,T=4)  2:(C=4,T=16)
+  ...
+  Feasible (DM response time): Yes
+
+ex5:
+  0:(C=1,T=4)  1:(C=2,T=6)  2:(C=3,T=8)
+  ...
+  Feasible (DM response time): No</code></pre>
+<h2 id="analysis">Analysis</h2>
+<ol type="1">
+<li>Compare your results from running <code>FeasibleWorkload</code> compared to the Cheddar simulation. Are they all in agreement?</li>
+<li>What are the hyperperiods of each task set calculated by the Cheddar simulations?</li>
+<li>For the task set ex4, what do you notice about the Cheddar simulation time (hyperperiod) and the task 3 period? In a real-world implementation how confident would you be implementing the task set and guaranteeing deadlines are met? Refer to the simulation timing diagram to justify your answer.</li>
+</ol>
+<h2 id="submission">Submission</h2>
+<p>Include your modified source code and a lab report. Include screenshots of Cheddar simulations. If you forked the repo on your personal GitHub, commit and push your changes, then download your repo as a zip file. If you do not use GitHub, compress the source code in a zip file or tar file. Be sure that the command <code>./scripts/run_submission.sh</code> produces the expected output.</p>
+<h2 id="references" class="unnumbered">References</h2>
+<div id="refs" class="references">
+<div id="ref-Buttazzo2011">
+<p>[1] G. C. Buttazzo, <em>Hard real-time computing systems</em>, vol. 24. Springer US, 2011. doi: <a href="https://doi.org/10.1007/978-1-4614-0676-1">10.1007/978-1-4614-0676-1</a>.</p>
 </div>
 </div>
 </body>
